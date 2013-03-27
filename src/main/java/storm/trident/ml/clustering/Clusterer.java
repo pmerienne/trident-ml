@@ -1,4 +1,4 @@
-package storm.trident.ml;
+package storm.trident.ml.clustering;
 
 import java.util.List;
 

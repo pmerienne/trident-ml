@@ -6,6 +6,9 @@ import org.junit.Test;
 
 import storm.trident.TridentState;
 import storm.trident.TridentTopology;
+import storm.trident.ml.classification.ClassifierUpdater;
+import storm.trident.ml.classification.ClassifyQuery;
+import storm.trident.ml.classification.PerceptronClassifier;
 import storm.trident.ml.testing.NANDSpout;
 import storm.trident.ml.testing.StringToFeatures;
 import storm.trident.testing.MemoryMapState;

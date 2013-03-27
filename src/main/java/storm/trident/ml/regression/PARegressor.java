@@ -1,51 +1,77 @@
-package storm.trident.ml;
+package storm.trident.ml.regression;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import storm.trident.ml.util.MathUtil;
 
-public class PAClassifier implements Classifier<Boolean, Double> {
+/**
+ * Passive-Aggresive binary classifier.
+ * 
+ * @see Online Passive-Aggressive Algorithms
+ * 
+ *      Koby Crammer, Ofer Dekel, Joseph Keshet, Shai Shalev-Shwartz, Yoram Singer; 7(Mar):551--585, 2006.
+ * @author pmerienne
+ * 
+ */
+public class PARegressor implements Regressor {
 
 	private static final long serialVersionUID = -5163481593640555140L;
 
 	private List<Double> weights;
 
+	private Double epsilon = 0.01;
+
 	private Type type = Type.STANDARD;
 	private Double aggressiveness = 0.001;
 
-	public PAClassifier() {
+	public PARegressor() {
 	}
 
-	public PAClassifier(Type type) {
+	public PARegressor(Double epsilon) {
+		this.epsilon = epsilon;
+	}
+
+	public PARegressor(Type type) {
 		this.type = type;
 	}
 
-	public PAClassifier(Type type, Double aggressiveness) {
+	public PARegressor(Type type, Double aggressiveness) {
+		this.type = type;
+		this.aggressiveness = aggressiveness;
+	}
+
+	public PARegressor(Double epsilon, Type type) {
+		this.epsilon = epsilon;
+		this.type = type;
+	}
+
+	public PARegressor(Double epsilon, Type type, Double aggressiveness) {
+		this.epsilon = epsilon;
 		this.type = type;
 		this.aggressiveness = aggressiveness;
 	}
 
 	@Override
-	public Boolean classify(List<Double> features) {
+	public Double predict(List<Double> features) {
 		if (this.weights == null) {
 			this.init(features.size());
 		}
 
-		Double evaluation = MathUtil.dotProduct(features, this.weights);
-
-		Boolean prediction = evaluation >= 0 ? Boolean.TRUE : Boolean.FALSE;
+		Double prediction = MathUtil.dotProduct(features, this.weights);
 		return prediction;
 	}
 
 	@Override
-	public void update(Boolean expectedLabel, List<Double> features) {
+	public void update(Double expected, List<Double> features) {
 		if (this.weights == null) {
 			this.init(features.size());
 		}
-		Double expectedLabelAsInt = expectedLabel ? 1.0 : -1.0;
 
-		double loss = Math.max(0.0, 1 - (expectedLabelAsInt * MathUtil.dotProduct(this.weights, features)));
+		Double prediction = this.predict(features);
+
+		double sign = expected - prediction > 0 ? 1.0 : -1.0;
+		double loss = Math.max(0.0, Math.abs(prediction - expected) - this.epsilon);
 		double update = 0;
 
 		if (Type.STANDARD.equals(this.type)) {
@@ -56,7 +82,7 @@ public class PAClassifier implements Classifier<Boolean, Double> {
 			update = loss / (Math.pow(MathUtil.norm(features), 2) + (1.0 / (2 * this.aggressiveness)));
 		}
 
-		List<Double> scaledFeatures = MathUtil.multiply(features, update * expectedLabelAsInt);
+		List<Double> scaledFeatures = MathUtil.multiply(features, update * sign);
 		this.weights = MathUtil.add(this.weights, scaledFeatures);
 	}
 
@@ -92,7 +118,7 @@ public class PAClassifier implements Classifier<Boolean, Double> {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		PAClassifier other = (PAClassifier) obj;
+		PARegressor other = (PARegressor) obj;
 		if (weights == null) {
 			if (other.weights != null)
 				return false;

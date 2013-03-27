@@ -1,4 +1,4 @@
-package storm.trident.ml;
+package storm.trident.ml.classification;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,25 +15,21 @@ public class MultiClassPAClassifier implements Classifier<Integer, Double> {
 	private Double aggressiveness = 0.001;
 
 	private Integer nbClasses;
-	private Integer featureSize;
 
 	public MultiClassPAClassifier() {
 	}
 
-	public MultiClassPAClassifier(Integer nbClasses, Integer featureSize) {
+	public MultiClassPAClassifier(Integer nbClasses) {
 		this.nbClasses = nbClasses;
-		this.featureSize = featureSize;
 	}
 
-	public MultiClassPAClassifier(Integer nbClasses, Integer featureSize, Type type) {
+	public MultiClassPAClassifier(Integer nbClasses, Type type) {
 		this.nbClasses = nbClasses;
-		this.featureSize = featureSize;
 		this.type = type;
 	}
 
-	public MultiClassPAClassifier(Integer nbClasses, Integer featureSize, Type type, Double aggressiveness) {
+	public MultiClassPAClassifier(Integer nbClasses, Type type, Double aggressiveness) {
 		this.nbClasses = nbClasses;
-		this.featureSize = featureSize;
 		this.type = type;
 		this.aggressiveness = aggressiveness;
 	}
@@ -41,7 +37,7 @@ public class MultiClassPAClassifier implements Classifier<Integer, Double> {
 	@Override
 	public Integer classify(List<Double> features) {
 		if (this.weightVectors == null) {
-			this.initWeightVectors();
+			this.initWeightVectors(features.size());
 		}
 
 		Integer prediction = null;
@@ -51,7 +47,7 @@ public class MultiClassPAClassifier implements Classifier<Integer, Double> {
 		List<Double> currentWeightVector;
 		for (int i = 0; i < this.weightVectors.size(); i++) {
 			currentWeightVector = this.weightVectors.get(i);
-			currentClassScore = MathUtil.dotProduct(features, currentWeightVector);
+			currentClassScore = MathUtil.dotProduct(currentWeightVector, features);
 			if (currentClassScore > highestScore) {
 				prediction = i;
 				highestScore = currentClassScore;
@@ -66,7 +62,7 @@ public class MultiClassPAClassifier implements Classifier<Integer, Double> {
 		Integer predictedLabel = this.classify(features);
 
 		// lagrange multiplier
-		double loss = 1 - (MathUtil.dotProduct(this.weightVectors.get(expectedLabel), features) - MathUtil.dotProduct(this.weightVectors.get(predictedLabel),
+		double loss = 1.0 - (MathUtil.dotProduct(this.weightVectors.get(expectedLabel), features) - MathUtil.dotProduct(this.weightVectors.get(predictedLabel),
 				features));
 		double tau = 0.0;
 
@@ -91,11 +87,11 @@ public class MultiClassPAClassifier implements Classifier<Integer, Double> {
 		}
 	}
 
-	private void initWeightVectors() {
+	private void initWeightVectors(int featureSize) {
 		this.weightVectors = new ArrayList<List<Double>>(this.nbClasses);
 		for (int i = 0; i < this.nbClasses; i++) {
-			this.weightVectors.add(new ArrayList<Double>(this.featureSize));
-			for (int j = 0; j < this.featureSize; j++) {
+			this.weightVectors.add(new ArrayList<Double>(featureSize));
+			for (int j = 0; j < featureSize; j++) {
 				this.weightVectors.get(i).add(0.0);
 			}
 		}
@@ -117,20 +113,18 @@ public class MultiClassPAClassifier implements Classifier<Integer, Double> {
 		this.nbClasses = nbClasses;
 	}
 
-	public Integer getFeatureSize() {
-		return featureSize;
-	}
-
-	public void setFeatureSize(Integer featureSize) {
-		this.featureSize = featureSize;
+	@Override
+	public String toString() {
+		return "MultiClassPAClassifier [type=" + type + ", aggressiveness=" + aggressiveness + ", nbClasses=" + nbClasses + "]";
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((featureSize == null) ? 0 : featureSize.hashCode());
+		result = prime * result + ((aggressiveness == null) ? 0 : aggressiveness.hashCode());
 		result = prime * result + ((nbClasses == null) ? 0 : nbClasses.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		result = prime * result + ((weightVectors == null) ? 0 : weightVectors.hashCode());
 		return result;
 	}
@@ -144,15 +138,17 @@ public class MultiClassPAClassifier implements Classifier<Integer, Double> {
 		if (getClass() != obj.getClass())
 			return false;
 		MultiClassPAClassifier other = (MultiClassPAClassifier) obj;
-		if (featureSize == null) {
-			if (other.featureSize != null)
+		if (aggressiveness == null) {
+			if (other.aggressiveness != null)
 				return false;
-		} else if (!featureSize.equals(other.featureSize))
+		} else if (!aggressiveness.equals(other.aggressiveness))
 			return false;
 		if (nbClasses == null) {
 			if (other.nbClasses != null)
 				return false;
 		} else if (!nbClasses.equals(other.nbClasses))
+			return false;
+		if (type != other.type)
 			return false;
 		if (weightVectors == null) {
 			if (other.weightVectors != null)
@@ -160,11 +156,6 @@ public class MultiClassPAClassifier implements Classifier<Integer, Double> {
 		} else if (!weightVectors.equals(other.weightVectors))
 			return false;
 		return true;
-	}
-
-	@Override
-	public String toString() {
-		return "PA [nbClasses=" + nbClasses + ", featureSize=" + featureSize + ", weightVectors=" + weightVectors + "]";
 	}
 
 	public static enum Type {

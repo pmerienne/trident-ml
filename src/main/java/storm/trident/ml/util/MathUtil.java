@@ -18,7 +18,6 @@ public class MathUtil {
 		return sum;
 	}
 
-
 	public static List<Double> multiply(Double multiplier, List<Double> a) {
 		List<Double> results = new ArrayList<Double>(a.size());
 
@@ -28,7 +27,7 @@ public class MathUtil {
 
 		return results;
 	}
-	
+
 	public static List<Double> multiply(List<Double> a, Double multiplier) {
 		List<Double> results = new ArrayList<Double>(a.size());
 
@@ -85,7 +84,7 @@ public class MathUtil {
 		Double sum = 0.0;
 
 		for (int i = 0; i < a.size(); i++) {
-			sum = +Math.pow(a.get(i) - b.get(i), 2);
+			sum += Math.pow(a.get(i) - b.get(i), 2);
 		}
 
 		return Math.sqrt(sum);

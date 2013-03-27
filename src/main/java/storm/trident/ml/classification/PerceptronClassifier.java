@@ -1,4 +1,4 @@
-package storm.trident.ml;
+package storm.trident.ml.classification;
 
 import java.util.ArrayList;
 import java.util.List;
