@@ -6,7 +6,7 @@ import java.util.List;
 import storm.trident.ml.util.MathUtil;
 
 /**
- * Passive-Aggresive binary classifier.
+ * Passive-Aggresive regressor.
  * 
  * @see Online Passive-Aggressive Algorithms
  * 

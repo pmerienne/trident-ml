@@ -26,7 +26,7 @@ public class ClassifierUpdater<L, F> extends BaseStateUpdater<MapState<Classifie
 	@SuppressWarnings("unchecked")
 	@Override
 	public void updateState(MapState<Classifier<L, F>> state, List<TridentTuple> tuples, TridentCollector collector) {
-		// Get perceptron model
+		// Get model
 		List<Classifier<L, F>> classifiers = state.multiGet(KeysUtil.toKeys(this.classifierName));
 		Classifier<L, F> classifier = null;
 		if (classifiers != null && !classifiers.isEmpty()) {
@@ -47,7 +47,7 @@ public class ClassifierUpdater<L, F> extends BaseStateUpdater<MapState<Classifie
 			classifier.update(label, features);
 		}
 
-		// Save perceptron model
+		// Save model
 		state.multiPut(KeysUtil.toKeys(this.classifierName), Arrays.asList(classifier));
 	}
 
