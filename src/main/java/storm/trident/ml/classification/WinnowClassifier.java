@@ -5,40 +5,51 @@ import java.util.List;
 
 import storm.trident.ml.util.MathUtil;
 
-public class WinnowClassifier implements Classifier<Boolean, Boolean> {
+public class WinnowClassifier implements Classifier<Boolean, Double> {
 
 	private static final long serialVersionUID = -5163481593640555140L;
 
 	private List<Double> weights;
-	public double step = 2;
-	public double threshold = 0.5;
-	public boolean autoThreshold = true;
+	public double promotion = 1.5;
+	public double demotion = 0.5;
+	public double threshold = 1.0;
+
+	public WinnowClassifier() {
+	}
+
+	public WinnowClassifier(double promotion, double demotion, double threshold) {
+		this.promotion = promotion;
+		this.demotion = demotion;
+		this.threshold = threshold;
+	}
 
 	@Override
-	public Boolean classify(List<Boolean> features) {
+	public Boolean classify(List<Double> features) {
 		if (this.weights == null) {
 			this.init(features.size());
 		}
 
-		Double evaluation = MathUtil.dotProduct(toDoubles(features), this.weights);
+		Double evaluation = MathUtil.dotProduct(features, this.weights);
 
-		Boolean prediction = evaluation >= 0 ? Boolean.TRUE : Boolean.FALSE;
+		Boolean prediction = evaluation >= this.threshold ? Boolean.TRUE : Boolean.FALSE;
 		return prediction;
 	}
 
 	@Override
-	public void update(Boolean label, List<Boolean> features) {
+	public void update(Boolean label, List<Double> features) {
 		Boolean predictedLabel = this.classify(features);
 
+		// The model is updated only when a mistake is made
 		if (!label.equals(predictedLabel)) {
+
 			for (int i = 0; i < features.size(); i++) {
-				if (features.get(i)) {
+				if (features.get(i) * this.weights.get(i) > 0) {
 					if (predictedLabel) {
-						// Elimination step
-						this.weights.set(i, this.weights.get(i) / this.step);
+						// Demotion step
+						this.weights.set(i, this.weights.get(i) * this.demotion);
 					} else {
 						// Promotion step
-						this.weights.set(i, this.step * this.weights.get(i));
+						this.weights.set(i, this.weights.get(i) * this.promotion);
 					}
 				}
 			}
@@ -49,12 +60,7 @@ public class WinnowClassifier implements Classifier<Boolean, Boolean> {
 		// Init weights
 		this.weights = new ArrayList<Double>(featureSize);
 		for (int i = 0; i < featureSize; i++) {
-			this.weights.add(1.0);
-		}
-
-		// Auto-set threshold
-		if (this.autoThreshold) {
-			this.threshold = featureSize / 2.0;
+			this.weights.add(this.threshold / featureSize);
 		}
 	}
 
@@ -74,29 +80,30 @@ public class WinnowClassifier implements Classifier<Boolean, Boolean> {
 		this.threshold = threshold;
 	}
 
-	public double getStep() {
-		return step;
+	public double getPromotion() {
+		return promotion;
 	}
 
-	public void setStep(double step) {
-		this.step = step;
+	public void setPromotion(double promotion) {
+		this.promotion = promotion;
 	}
 
-	public boolean isAutoThreshold() {
-		return autoThreshold;
+	public double getDemotion() {
+		return demotion;
 	}
 
-	public void setAutoThreshold(boolean autoThreshold) {
-		this.autoThreshold = autoThreshold;
+	public void setDemotion(double demotion) {
+		this.demotion = demotion;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (autoThreshold ? 1231 : 1237);
 		long temp;
-		temp = Double.doubleToLongBits(step);
+		temp = Double.doubleToLongBits(demotion);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(promotion);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
 		temp = Double.doubleToLongBits(threshold);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
@@ -113,9 +120,9 @@ public class WinnowClassifier implements Classifier<Boolean, Boolean> {
 		if (getClass() != obj.getClass())
 			return false;
 		WinnowClassifier other = (WinnowClassifier) obj;
-		if (autoThreshold != other.autoThreshold)
+		if (Double.doubleToLongBits(demotion) != Double.doubleToLongBits(other.demotion))
 			return false;
-		if (Double.doubleToLongBits(step) != Double.doubleToLongBits(other.step))
+		if (Double.doubleToLongBits(promotion) != Double.doubleToLongBits(other.promotion))
 			return false;
 		if (Double.doubleToLongBits(threshold) != Double.doubleToLongBits(other.threshold))
 			return false;
@@ -129,18 +136,7 @@ public class WinnowClassifier implements Classifier<Boolean, Boolean> {
 
 	@Override
 	public String toString() {
-		return "Winnow [threshold=" + threshold + ", step=" + step + ", autoThreshold=" + autoThreshold + ", weights=" + weights + "]";
+		return "WinnowClassifier [promotion=" + promotion + ", demotion=" + demotion + ", threshold=" + threshold + "]";
 	}
 
-	public static Double toDouble(Boolean value) {
-		return value ? 1.0 : 0.0;
-	}
-
-	public static List<Double> toDoubles(List<Boolean> values) {
-		List<Double> doubles = new ArrayList<Double>(values.size());
-		for (Boolean value : values) {
-			doubles.add(toDouble(value));
-		}
-		return doubles;
-	}
 }
