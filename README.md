@@ -2,11 +2,11 @@
 Trident-ML aims to provide distributed online machine learning algorithms.
 
 It currently supports : 
-* Classification (Perceptron, Passive-Aggresive, Winnow)
+* Linear classification (Perceptron, Passive-Aggresive, Winnow)
+* Linear regression (Perceptron, Passive-Aggresive)
 
 # TODO
 * Implements Clustering (KMeans)
-* Implements Regression (Passive-Aggresive, Perceptron)
 * Implements datastream pre-processing (normalization, standardization, sampling, ...)
 * Implements feature extraction (NLP, Images, ...)
 * Implements noise adaptive filter (LMS, Wiener, Kalman, ...)
