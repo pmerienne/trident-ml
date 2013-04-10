@@ -14,7 +14,7 @@ public class MultiClassPATest extends ClassifierTest {
 
 	@Test
 	public void testWithGaussianData() {
-		List<Sample<Integer, Double>> dataset = Datasets.generateGaussianData(5000, 10, 10);
+		List<Sample<Integer, Double>> dataset = Datasets.generateDataForMultiLabelClassification(5000, 10, 10);
 		double actualError = this.eval(new MultiClassPAClassifier(10), dataset);
 		double actualError1 = this.eval(new MultiClassPAClassifier(10, Type.PA1), dataset);
 		double actualError2 = this.eval(new MultiClassPAClassifier(10, Type.PA2), dataset);

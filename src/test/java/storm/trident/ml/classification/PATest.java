@@ -21,9 +21,9 @@ public class PATest extends ClassifierTest {
 
 	@Test
 	public void testWithGaussianData() {
-		double error = this.eval(new PAClassifier(), Datasets.generateGaussianData(1000, 10));
-		double error1 = this.eval(new PAClassifier(Type.PA1), Datasets.generateGaussianData(1000, 10));
-		double error2 = this.eval(new PAClassifier(Type.PA2), Datasets.generateGaussianData(1000, 10));
+		double error = this.eval(new PAClassifier(), Datasets.generateDataForClassification(1000, 10));
+		double error1 = this.eval(new PAClassifier(Type.PA1), Datasets.generateDataForClassification(1000, 10));
+		double error2 = this.eval(new PAClassifier(Type.PA2), Datasets.generateDataForClassification(1000, 10));
 
 		assertTrue("Error " + error + " is to big!", error <= 0.01);
 		assertTrue("Error " + error + " is to big!", error1 <= 0.01);

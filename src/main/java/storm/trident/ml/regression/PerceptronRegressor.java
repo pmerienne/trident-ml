@@ -32,7 +32,7 @@ public class PerceptronRegressor implements Regressor {
 	@Override
 	public void update(Double expected, List<Double> features) {
 		Double prediction = this.predict(features);
-		
+
 		if (!expected.equals(prediction)) {
 			Double error = expected - prediction;
 
@@ -50,6 +50,11 @@ public class PerceptronRegressor implements Regressor {
 		for (int i = 0; i < size; i++) {
 			this.weights.add(0.0);
 		}
+	}
+
+	@Override
+	public void reset() {
+		this.weights = null;
 	}
 
 	public List<Double> getWeights() {

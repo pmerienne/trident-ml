@@ -10,7 +10,8 @@ import storm.trident.ml.util.MathUtil;
  * 
  * @see Online Passive-Aggressive Algorithms
  * 
- *      Koby Crammer, Ofer Dekel, Joseph Keshet, Shai Shalev-Shwartz, Yoram Singer; 7(Mar):551--585, 2006.
+ *      Koby Crammer, Ofer Dekel, Joseph Keshet, Shai Shalev-Shwartz, Yoram
+ *      Singer; 7(Mar):551--585, 2006.
  * @author pmerienne
  * 
  */
@@ -92,6 +93,11 @@ public class PARegressor implements Regressor {
 		for (int i = 0; i < featureSize; i++) {
 			this.weights.add(0.0);
 		}
+	}
+
+	@Override
+	public void reset() {
+		this.weights = null;
 	}
 
 	public List<Double> getWeights() {

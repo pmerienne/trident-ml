@@ -102,7 +102,7 @@ public class Datasets {
 		return samples;
 	}
 
-	public static List<Sample<Boolean, Double>> generateGaussianData(int size, int featureSize) {
+	public static List<Sample<Boolean, Double>> generateDataForClassification(int size, int featureSize) {
 		Random random = new Random();
 		List<Sample<Boolean, Double>> samples = new ArrayList<Sample<Boolean, Double>>();
 
@@ -118,7 +118,7 @@ public class Datasets {
 		return samples;
 	}
 
-	public static List<Sample<Integer, Double>> generateGaussianData(int size, int featureSize, int nbClasses) {
+	public static List<Sample<Integer, Double>> generateDataForMultiLabelClassification(int size, int featureSize, int nbClasses) {
 		Random random = new Random();
 		List<Sample<Integer, Double>> samples = new ArrayList<Sample<Integer, Double>>();
 
@@ -129,6 +129,30 @@ public class Datasets {
 				features.add((j % (label + 1) == 0 ? 1.0 : -1.0) + random.nextDouble() - 0.5);
 			}
 			samples.add(new Sample<Integer, Double>(label, features));
+		}
+
+		return samples;
+	}
+
+	public static List<Sample<Double, Double>> generateDataForRegression(int size, int featureSize) {
+		List<Sample<Double, Double>> samples = new ArrayList<Sample<Double, Double>>();
+
+		Random random = new Random();
+		List<Double> factors = new ArrayList<Double>(featureSize);
+		for (int i = 0; i < featureSize; i++) {
+			factors.add(random.nextDouble() * (1 + random.nextInt(2)));
+		}
+
+		for (int i = 0; i < size; i++) {
+			double label = 0.0;
+			List<Double> features = new ArrayList<Double>();
+			for (int j = 0; j < featureSize; j++) {
+				double feature = (j % 2 == 0 ? 1.0 : -1.0) * random.nextDouble();
+				features.add(feature);
+				label += factors.get(j) * feature;
+			}
+
+			samples.add(new Sample<Double, Double>(label, features));
 		}
 
 		return samples;

@@ -20,7 +20,7 @@ public class PerceptronTest extends ClassifierTest {
 
 	@Test
 	public void testWithGaussianData() {
-		double error = this.eval(new PerceptronClassifier(), Datasets.generateGaussianData(100, 10));
+		double error = this.eval(new PerceptronClassifier(), Datasets.generateDataForClassification(100, 10));
 		assertTrue("Error " + error + " is to big!", error < 0.01);
 	}
 
