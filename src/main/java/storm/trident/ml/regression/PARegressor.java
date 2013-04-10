@@ -23,34 +23,11 @@ public class PARegressor implements Regressor {
 
 	private Double epsilon = 0.01;
 
-	private Type type = Type.STANDARD;
-	private Double aggressiveness = 0.001;
-
 	public PARegressor() {
 	}
 
 	public PARegressor(Double epsilon) {
 		this.epsilon = epsilon;
-	}
-
-	public PARegressor(Type type) {
-		this.type = type;
-	}
-
-	public PARegressor(Type type, Double aggressiveness) {
-		this.type = type;
-		this.aggressiveness = aggressiveness;
-	}
-
-	public PARegressor(Double epsilon, Type type) {
-		this.epsilon = epsilon;
-		this.type = type;
-	}
-
-	public PARegressor(Double epsilon, Type type, Double aggressiveness) {
-		this.epsilon = epsilon;
-		this.type = type;
-		this.aggressiveness = aggressiveness;
 	}
 
 	@Override
@@ -73,15 +50,7 @@ public class PARegressor implements Regressor {
 
 		double sign = expected - prediction > 0 ? 1.0 : -1.0;
 		double loss = Math.max(0.0, Math.abs(prediction - expected) - this.epsilon);
-		double update = 0;
-
-		if (Type.STANDARD.equals(this.type)) {
-			update = loss / Math.pow(MathUtil.norm(features), 2);
-		} else if (Type.PA1.equals(this.type)) {
-			update = Math.min(this.aggressiveness, loss / Math.pow(MathUtil.norm(features), 2));
-		} else if (Type.PA2.equals(this.type)) {
-			update = loss / (Math.pow(MathUtil.norm(features), 2) + (1.0 / (2 * this.aggressiveness)));
-		}
+		double update = loss / Math.pow(MathUtil.norm(features), 2);
 
 		List<Double> scaledFeatures = MathUtil.multiply(features, update * sign);
 		this.weights = MathUtil.add(this.weights, scaledFeatures);
@@ -135,11 +104,7 @@ public class PARegressor implements Regressor {
 
 	@Override
 	public String toString() {
-		return "PA [weights=" + weights + "]";
-	}
-
-	public static enum Type {
-		STANDARD, PA1, PA2;
+		return "PARegressor [epsilon=" + epsilon + "]";
 	}
 
 }
