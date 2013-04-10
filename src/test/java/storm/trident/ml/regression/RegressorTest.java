@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import storm.trident.ml.testing.Sample;
+import storm.trident.ml.testing.data.Sample;
 
 public class RegressorTest {
 

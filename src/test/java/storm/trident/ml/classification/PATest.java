@@ -7,25 +7,38 @@ import java.util.List;
 import org.junit.Test;
 
 import storm.trident.ml.classification.PAClassifier.Type;
-import storm.trident.ml.testing.Sample;
+import storm.trident.ml.testing.data.Datasets;
+import storm.trident.ml.testing.data.Sample;
 
 public class PATest extends ClassifierTest {
 
 	@Test
 	public void testWithNand() {
-		List<Sample<Boolean, Double>> samples = this.generatedNandSamples(100);
-		double error = this.eval(new PAClassifier(), samples, 0.80);
-		assertTrue(error < 0.001);
+		List<Sample<Boolean, Double>> samples = Datasets.generatedNandSamples(100);
+		double error = this.eval(new PAClassifier(), samples);
+		assertTrue("Error " + error + " is to big!", error < 0.01);
 	}
 
 	@Test
-	public void testWithDiabetes() {
-		double error = this.eval(new PAClassifier(), this.getDiabetesSamples(), 0.80);
-		double error1 = this.eval(new PAClassifier(Type.PA1), this.getDiabetesSamples(), 0.80);
-		double error2 = this.eval(new PAClassifier(Type.PA2), this.getDiabetesSamples(), 0.80);
+	public void testWithGaussianData() {
+		double error = this.eval(new PAClassifier(), Datasets.generateGaussianData(1000, 10));
+		double error1 = this.eval(new PAClassifier(Type.PA1), Datasets.generateGaussianData(1000, 10));
+		double error2 = this.eval(new PAClassifier(Type.PA2), Datasets.generateGaussianData(1000, 10));
 
-		assertTrue(error <= 0.05);
-		assertTrue(error1 <= 0.05);
-		assertTrue(error2 <= 0.05);
+		assertTrue("Error " + error + " is to big!", error <= 0.01);
+		assertTrue("Error " + error + " is to big!", error1 <= 0.01);
+		assertTrue("Error " + error + " is to big!", error2 <= 0.01);
 	}
+
+	@Test
+	public void testWithSPAMData() {
+		double error = this.eval(new PAClassifier(), Datasets.SPAM_SAMPLES);
+		double error1 = this.eval(new PAClassifier(Type.PA1), Datasets.SPAM_SAMPLES);
+		double error2 = this.eval(new PAClassifier(Type.PA2), Datasets.SPAM_SAMPLES);
+
+		assertTrue("Error " + error + " is to big!", error <= 0.25);
+		assertTrue("Error " + error + " is to big!", error1 <= 0.25);
+		assertTrue("Error " + error + " is to big!", error2 <= 0.25);
+	}
+
 }

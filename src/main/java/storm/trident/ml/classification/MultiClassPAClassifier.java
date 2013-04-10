@@ -97,6 +97,11 @@ public class MultiClassPAClassifier implements Classifier<Integer, Double> {
 		}
 	}
 
+	@Override
+	public void reset() {
+		this.weightVectors = null;
+	}
+	
 	public List<List<Double>> getWeightVectors() {
 		return weightVectors;
 	}
@@ -111,11 +116,6 @@ public class MultiClassPAClassifier implements Classifier<Integer, Double> {
 
 	public void setNbClasses(Integer nbClasses) {
 		this.nbClasses = nbClasses;
-	}
-
-	@Override
-	public String toString() {
-		return "MultiClassPAClassifier [type=" + type + ", aggressiveness=" + aggressiveness + ", nbClasses=" + nbClasses + "]";
 	}
 
 	@Override
@@ -156,6 +156,11 @@ public class MultiClassPAClassifier implements Classifier<Integer, Double> {
 		} else if (!weightVectors.equals(other.weightVectors))
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "MultiClassPAClassifier [type=" + type + ", aggressiveness=" + aggressiveness + ", nbClasses=" + nbClasses + "]";
 	}
 
 	public static enum Type {

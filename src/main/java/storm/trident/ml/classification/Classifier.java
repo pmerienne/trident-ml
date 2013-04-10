@@ -8,4 +8,6 @@ public interface Classifier<L, F> extends Serializable {
 	L classify(List<F> features);
 
 	void update(L label, List<F> features);
+
+	void reset();
 }

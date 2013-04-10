@@ -92,6 +92,12 @@ public class MBWinnowClassifier implements Classifier<Boolean, Double> {
 		}
 	}
 
+	@Override
+	public void reset() {
+		this.u = null;
+		this.v = null;
+	}
+
 	public List<Double> getU() {
 		return u;
 	}

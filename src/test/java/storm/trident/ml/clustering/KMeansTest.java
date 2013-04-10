@@ -17,7 +17,7 @@ import org.junit.Test;
 
 import storm.trident.ml.clustering.KMeans;
 import storm.trident.ml.testing.RandEvaluator;
-import storm.trident.ml.testing.Sample;
+import storm.trident.ml.testing.data.Sample;
 
 public class KMeansTest {
 

@@ -3,6 +3,7 @@ package storm.trident.ml.testing;
 import java.util.List;
 
 import storm.trident.ml.clustering.Clusterer;
+import storm.trident.ml.testing.data.Sample;
 
 /**
  * Evaluates clusters using the Rand index : W. M. Rand (1971). "Objective criteria for the evaluation of clustering methods". Journal of the American Statistical

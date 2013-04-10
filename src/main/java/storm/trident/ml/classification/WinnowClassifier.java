@@ -64,6 +64,11 @@ public class WinnowClassifier implements Classifier<Boolean, Double> {
 		}
 	}
 
+	@Override
+	public void reset() {
+		this.weights = null;
+	}
+
 	public List<Double> getWeights() {
 		return weights;
 	}
