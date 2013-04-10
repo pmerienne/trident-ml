@@ -37,7 +37,7 @@ public class ClassifierTridentIntegrationTest {
 					.project(new Fields("prediction"));
 			cluster.submitTopology("wordCounter", new Config(), toppology.build());
 
-			Thread.sleep(2000);
+			Thread.sleep(4000);
 
 			assertEquals(Boolean.TRUE, extractPrediction(localDRPC.execute("predict", "1.0 0.0 0.0")));
 			assertEquals(Boolean.TRUE, extractPrediction(localDRPC.execute("predict", "1.0 0.0 1.0")));
