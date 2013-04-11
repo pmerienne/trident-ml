@@ -48,6 +48,7 @@ public class ClassifierTest {
 			}
 		}
 
+		System.out.println(errorCount / eval.size());
 		return errorCount / eval.size();
 	}
 

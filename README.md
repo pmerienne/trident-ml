@@ -2,7 +2,7 @@
 Trident-ML is a Trident library for distributed online machine learning.
 
 It currently supports : 
-* Linear classification (Perceptron, Passive-Aggresive, Winnow)
+* Linear classification (Perceptron, Passive-Aggresive, Winnow, AROW)
 * Linear regression (Perceptron, Passive-Aggresive)
 
 # TODO

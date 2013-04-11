@@ -15,14 +15,17 @@ public class Datasets {
 
 	private final static File USPS_FILE = new File("src/test/resources/usps.csv");
 	private final static File SPAM_FILE = new File("src/test/resources/spam.csv");
+	private final static File BIRTHS_FILE = new File("src/test/resources/births.csv");
 
 	public final static List<Sample<Boolean, Double>> SPAM_SAMPLES = new ArrayList<Sample<Boolean, Double>>();
 	public final static List<Sample<Integer, Double>> USPS_SAMPLES = new ArrayList<Sample<Integer, Double>>();
+	public final static List<Sample<Double, Double>> BIRTHS_SAMPLES = new ArrayList<Sample<Double, Double>>();
 
 	static {
 		try {
 			loadUSPSData();
 			loadSPAMData();
+			loadBirthsData();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -88,6 +91,35 @@ public class Datasets {
 		}
 	}
 
+	private static void loadBirthsData() throws IOException {
+		FileInputStream is = new FileInputStream(BIRTHS_FILE);
+		BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+		try {
+			String line;
+			while ((line = br.readLine()) != null) {
+				try {
+					String[] values = line.split(";");
+
+					Double label = Double.parseDouble(values[values.length - 1]);
+					List<Double> features = new ArrayList<Double>();
+					for (int i = 1; i < values.length - 1; i++) {
+						features.add(Double.parseDouble(values[i]));
+					}
+
+					BIRTHS_SAMPLES.add(new Sample<Double, Double>(label, features));
+				} catch (Exception ex) {
+					System.out.println("Skipped PML sample : " + line);
+				}
+			}
+
+			Collections.shuffle(BIRTHS_SAMPLES);
+		} finally {
+			is.close();
+			br.close();
+		}
+	}
+
 	public static List<Sample<Boolean, Double>> generatedNandSamples(int nb) {
 		Random random = new Random();
 
@@ -112,6 +144,7 @@ public class Datasets {
 			for (int j = 0; j < featureSize; j++) {
 				features.add((j % 2 == 0 ? 1.0 : -1.0) * label + random.nextDouble() - 0.5);
 			}
+			features.add(1.0);
 			samples.add(new Sample<Boolean, Double>(label > 0, features));
 		}
 
