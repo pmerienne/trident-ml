@@ -1,4 +1,4 @@
-package storm.trident.ml;
+package storm.trident.ml.classification;
 
 import static org.junit.Assert.assertEquals;
 
@@ -9,6 +9,7 @@ import storm.trident.TridentTopology;
 import storm.trident.ml.classification.ClassifierUpdater;
 import storm.trident.ml.classification.ClassifyQuery;
 import storm.trident.ml.classification.PerceptronClassifier;
+import storm.trident.ml.preprocessing.InstanceWrapper;
 import storm.trident.ml.testing.NANDSpout;
 import storm.trident.ml.testing.StringToFeatures;
 import storm.trident.testing.MemoryMapState;
@@ -29,11 +30,13 @@ public class ClassifierTridentIntegrationTest {
 			// Build topology
 			TridentTopology toppology = new TridentTopology();
 
-			TridentState perceptronModel = toppology.newStream("nandsamples", new NANDSpout()).partitionPersist(new MemoryMapState.Factory(),
-					new Fields("label", "x0", "x1", "x2"), new ClassifierUpdater<Boolean>("test", new PerceptronClassifier()));
+			TridentState perceptronModel = toppology.newStream("nandsamples", new NANDSpout())
+					.each(new Fields("label", "x0", "x1", "x2"), new InstanceWrapper<Boolean>(true), new Fields("instance"))
+					.partitionPersist(new MemoryMapState.Factory(), new Fields("instance"), new ClassifierUpdater<Boolean>("test", new PerceptronClassifier()));
 
 			toppology.newDRPCStream("predict", localDRPC).each(new Fields("args"), new StringToFeatures(), new Fields("x0", "x1", "x2"))
-					.stateQuery(perceptronModel, new Fields("x0", "x1", "x2"), new ClassifyQuery<Boolean>("test"), new Fields("prediction"))
+					.each(new Fields("x0", "x1", "x2"), new InstanceWrapper<Boolean>(false), new Fields("instance"))
+					.stateQuery(perceptronModel, new Fields("instance"), new ClassifyQuery<Boolean>("test"), new Fields("prediction"))
 					.project(new Fields("prediction"));
 			cluster.submitTopology("wordCounter", new Config(), toppology.build());
 

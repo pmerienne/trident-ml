@@ -3,6 +3,7 @@ package storm.trident.ml.classification;
 import java.util.Arrays;
 import java.util.List;
 
+import storm.trident.ml.Instance;
 import storm.trident.ml.util.KeysUtil;
 import storm.trident.operation.TridentCollector;
 import storm.trident.state.BaseStateUpdater;
@@ -38,30 +39,14 @@ public class ClassifierUpdater<L> extends BaseStateUpdater<MapState<Classifier<L
 		}
 
 		// Update model
-		L label;
-		double[] features;
+		Instance<L> instance;
 		for (TridentTuple tuple : tuples) {
-			label = this.extractLabel(tuple);
-			features = this.extractFeatures(tuple);
-			classifier.update(label, features);
+			instance = (Instance<L>) tuple.get(0);
+			classifier.update(instance.label, instance.features);
 		}
 
 		// Save model
 		state.multiPut(KeysUtil.toKeys(this.classifierName), Arrays.asList(classifier));
-	}
-
-	protected double[] extractFeatures(TridentTuple tuple) {
-		double[] features = new double[tuple.size() - 1];
-		for (int i = 1; i < tuple.size(); i++) {
-			features[i - 1] = tuple.getDouble(i);
-		}
-		return features;
-	}
-
-	@SuppressWarnings("unchecked")
-	protected L extractLabel(TridentTuple tuple) {
-		L label = (L) tuple.get(0);
-		return label;
 	}
 
 }

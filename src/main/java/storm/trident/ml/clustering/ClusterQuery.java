@@ -3,6 +3,7 @@ package storm.trident.ml.clustering;
 import java.util.ArrayList;
 import java.util.List;
 
+import storm.trident.ml.Instance;
 import storm.trident.ml.util.KeysUtil;
 import storm.trident.operation.TridentCollector;
 import storm.trident.state.BaseQueryFunction;
@@ -29,23 +30,15 @@ public class ClusterQuery extends BaseQueryFunction<MapState<Clusterer>, Integer
 			Clusterer clusterer = clusterers.get(0);
 
 			Integer clustererIndex;
-			double[] features;
+			Instance<?> instance;
 			for (TridentTuple tuple : tuples) {
-				features = this.extractFeatures(tuple);
-				clustererIndex = clusterer.classify(features);
+				instance = (Instance<?>) tuple.get(0);
+				clustererIndex = clusterer.classify(instance.features);
 				clusterIndexes.add(clustererIndex);
 			}
 		}
 
 		return clusterIndexes;
-	}
-
-	protected double[] extractFeatures(TridentTuple tuple) {
-		double[] features = new double[tuple.size()];
-		for (int i = 0; i < tuple.size(); i++) {
-			features[i] = tuple.getDouble(i);
-		}
-		return features;
 	}
 
 	public void execute(TridentTuple tuple, Integer result, TridentCollector collector) {

@@ -2,7 +2,7 @@ package storm.trident.ml.stats;
 
 import java.io.Serializable;
 
-public class SimpleStreamFeatureStatistics implements StreamFeatureStatistics, Serializable {
+public class FixedStreamFeatureStatistics implements StreamFeatureStatistics, Serializable {
 
 	private static final long serialVersionUID = -7406184811401750690L;
 

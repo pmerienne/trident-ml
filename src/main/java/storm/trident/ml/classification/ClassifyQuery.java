@@ -3,6 +3,7 @@ package storm.trident.ml.classification;
 import java.util.ArrayList;
 import java.util.List;
 
+import storm.trident.ml.Instance;
 import storm.trident.ml.util.KeysUtil;
 import storm.trident.operation.TridentCollector;
 import storm.trident.state.BaseQueryFunction;
@@ -20,6 +21,7 @@ public class ClassifyQuery<L> extends BaseQueryFunction<MapState<Classifier<L>>,
 		this.classifierName = classifierName;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<L> batchRetrieve(MapState<Classifier<L>> state, List<TridentTuple> tuples) {
 		List<L> labels = new ArrayList<L>();
@@ -29,23 +31,15 @@ public class ClassifyQuery<L> extends BaseQueryFunction<MapState<Classifier<L>>,
 			Classifier<L> classifier = classifiers.get(0);
 
 			L label;
-			double[] features;
+			Instance<L> instance;
 			for (TridentTuple tuple : tuples) {
-				features = this.extractFeatures(tuple);
-				label = classifier.classify(features);
+				instance = (Instance<L>) tuple.get(0);
+				label = classifier.classify(instance.features);
 				labels.add(label);
 			}
 		}
 
 		return labels;
-	}
-
-	protected double[] extractFeatures(TridentTuple tuple) {
-		double[] features = new double[tuple.size()];
-		for (int i = 0; i < tuple.size(); i++) {
-			features[i] = tuple.getDouble(i);
-		}
-		return features;
 	}
 
 	public void execute(TridentTuple tuple, L result, TridentCollector collector) {

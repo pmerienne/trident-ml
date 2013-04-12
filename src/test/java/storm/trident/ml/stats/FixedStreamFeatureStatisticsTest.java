@@ -6,7 +6,7 @@ import java.util.Random;
 
 import org.junit.Test;
 
-public class SimpleStreamFeatureStatisticsTest {
+public class FixedStreamFeatureStatisticsTest {
 
 	@Test
 	public void testUpdate() {
@@ -22,7 +22,7 @@ public class SimpleStreamFeatureStatisticsTest {
 		}
 
 		// When
-		SimpleStreamFeatureStatistics statistics = new SimpleStreamFeatureStatistics();
+		FixedStreamFeatureStatistics statistics = new FixedStreamFeatureStatistics();
 		for (int i = 0; i < size; i++) {
 			statistics.update(features[i]);
 		}

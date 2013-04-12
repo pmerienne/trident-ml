@@ -61,10 +61,10 @@ public class MBWinnowClassifier implements Classifier<Boolean> {
 
 		// The model is updated only when a mistake is made
 		double yt = label ? 1.0 : -1.0;
-		if (score * yt <= this.margin) {
+		if (score * yt >= this.margin) {
 			for (int i = 0; i < features.length; i++) {
 				if (features[i] > 0) {
-					if (label) {
+					if (!label) {
 						// Promotion step
 						this.u[i] = this.u[i] * this.promotion * (1 + features[i]);
 						this.v[i] = this.v[i] * this.demotion * (1 - features[i]);

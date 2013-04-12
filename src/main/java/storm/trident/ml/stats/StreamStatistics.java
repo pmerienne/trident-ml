@@ -8,25 +8,58 @@ public class StreamStatistics implements Serializable {
 
 	private static final long serialVersionUID = -3873210308112567893L;
 
-	private List<SimpleStreamFeatureStatistics> featuresStatistics = new ArrayList<SimpleStreamFeatureStatistics>();
+	private Type type = Type.FIXED;
+
+	private List<StreamFeatureStatistics> featuresStatistics = new ArrayList<StreamFeatureStatistics>();
+
+	public StreamStatistics() {
+	}
+
+	public StreamStatistics(Type type) {
+		this.type = type;
+	}
 
 	public void update(double[] features) {
+		StreamFeatureStatistics featureStatistics;
 		for (int i = 0; i < features.length; i++) {
-			this.featuresStatistics.get(i).update(features[i]);
+			featureStatistics = this.getStreamStatistics(i);
+			featureStatistics.update(features[i]);
 		}
 	}
 
-	public List<SimpleStreamFeatureStatistics> getFeaturesStatistics() {
-		return featuresStatistics;
+	private StreamFeatureStatistics getStreamStatistics(int index) {
+		if (this.featuresStatistics.size() < index + 1) {
+			StreamFeatureStatistics featureStatistics = this.createFeatureStatistics();
+			this.featuresStatistics.add(featureStatistics);
+		}
+		return this.featuresStatistics.get(index);
 	}
 
-	public void setFeaturesStatistics(List<SimpleStreamFeatureStatistics> featuresStatistics) {
-		this.featuresStatistics = featuresStatistics;
+	private StreamFeatureStatistics createFeatureStatistics() {
+		StreamFeatureStatistics featureStatistics = null;
+		switch (this.type) {
+		case FIXED:
+			featureStatistics = new FixedStreamFeatureStatistics();
+			break;
+		case ADAPTIVE:
+			featureStatistics = new AdaptiveStreamFeatureStatistics();
+			break;
+		default:
+			break;
+		}
+		return featureStatistics;
+	}
+
+	public List<StreamFeatureStatistics> getFeaturesStatistics() {
+		return featuresStatistics;
 	}
 
 	@Override
 	public String toString() {
-		return "StreamStatistics [featuresStatistics=" + featuresStatistics + "]";
+		return "StreamStatistics [type=" + type + ", featuresStatistics=" + featuresStatistics + "]";
 	}
 
+	public static enum Type {
+		FIXED, ADAPTIVE;
+	}
 }

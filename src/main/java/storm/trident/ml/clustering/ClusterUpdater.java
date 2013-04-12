@@ -3,6 +3,7 @@ package storm.trident.ml.clustering;
 import java.util.Arrays;
 import java.util.List;
 
+import storm.trident.ml.Instance;
 import storm.trident.ml.util.KeysUtil;
 import storm.trident.operation.TridentCollector;
 import storm.trident.state.BaseStateUpdater;
@@ -37,22 +38,14 @@ public class ClusterUpdater extends BaseStateUpdater<MapState<Clusterer>> {
 		}
 
 		// Update model
-		double[] features;
+		Instance<?> instance;
 		for (TridentTuple tuple : tuples) {
-			features = this.extractFeatures(tuple);
-			clusterer.update(features);
+			instance = (Instance<?>) tuple.get(0);
+			clusterer.update(instance.features);
 		}
 
 		// Save model
 		state.multiPut(KeysUtil.toKeys(this.clustererName), Arrays.asList(clusterer));
-	}
-
-	protected double[] extractFeatures(TridentTuple tuple) {
-		double[] features = new double[tuple.size()];
-		for (int i = 0; i < tuple.size(); i++) {
-			features[i] = tuple.getDouble(i);
-		}
-		return features;
 	}
 
 	public String getClustererName() {
