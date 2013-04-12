@@ -1,13 +1,12 @@
 package storm.trident.ml.classification;
 
 import java.io.Serializable;
-import java.util.List;
 
-public interface Classifier<L, F> extends Serializable {
+public interface Classifier<L> extends Serializable {
 
-	L classify(List<F> features);
+	L classify(double[] features);
 
-	void update(L label, List<F> features);
+	void update(L label, double[] features);
 
 	void reset();
 }

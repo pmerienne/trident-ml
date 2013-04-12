@@ -10,7 +10,7 @@ import storm.trident.state.map.MapState;
 import storm.trident.tuple.TridentTuple;
 import backtype.storm.tuple.Values;
 
-public class ClassifyQuery<L, F> extends BaseQueryFunction<MapState<Classifier<L, F>>, L> {
+public class ClassifyQuery<L> extends BaseQueryFunction<MapState<Classifier<L>>, L> {
 
 	private static final long serialVersionUID = -9046858936834644113L;
 
@@ -21,15 +21,15 @@ public class ClassifyQuery<L, F> extends BaseQueryFunction<MapState<Classifier<L
 	}
 
 	@Override
-	public List<L> batchRetrieve(MapState<Classifier<L, F>> state, List<TridentTuple> tuples) {
+	public List<L> batchRetrieve(MapState<Classifier<L>> state, List<TridentTuple> tuples) {
 		List<L> labels = new ArrayList<L>();
 
-		List<Classifier<L, F>> classifiers = state.multiGet(KeysUtil.toKeys(this.classifierName));
+		List<Classifier<L>> classifiers = state.multiGet(KeysUtil.toKeys(this.classifierName));
 		if (classifiers != null && !classifiers.isEmpty()) {
-			Classifier<L, F> classifier = classifiers.get(0);
+			Classifier<L> classifier = classifiers.get(0);
 
 			L label;
-			List<F> features;
+			double[] features;
 			for (TridentTuple tuple : tuples) {
 				features = this.extractFeatures(tuple);
 				label = classifier.classify(features);
@@ -40,11 +40,10 @@ public class ClassifyQuery<L, F> extends BaseQueryFunction<MapState<Classifier<L
 		return labels;
 	}
 
-	@SuppressWarnings("unchecked")
-	protected List<F> extractFeatures(TridentTuple tuple) {
-		List<F> features = new ArrayList<F>();
+	protected double[] extractFeatures(TridentTuple tuple) {
+		double[] features = new double[tuple.size()];
 		for (int i = 0; i < tuple.size(); i++) {
-			features.add((F) tuple.get(i));
+			features[i] = tuple.getDouble(i);
 		}
 		return features;
 	}

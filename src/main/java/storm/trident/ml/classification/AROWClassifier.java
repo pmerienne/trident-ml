@@ -1,6 +1,6 @@
 package storm.trident.ml.classification;
 
-import java.util.List;
+import org.jblas.DoubleMatrix;
 
 import storm.trident.ml.util.MathUtil;
 
@@ -11,14 +11,14 @@ import storm.trident.ml.util.MathUtil;
  * @author pmerienne
  * 
  */
-public class AROWClassifier implements Classifier<Boolean, Double> {
+public class AROWClassifier implements Classifier<Boolean> {
 
 	private static final long serialVersionUID = 206770369174442259L;
 
 	private double r = 1.0;
 
-	private List<Double> weights;
-	private List<List<Double>> variance;
+	private double[] weights;
+	private double[][] variance;
 
 	public AROWClassifier() {
 	}
@@ -28,42 +28,49 @@ public class AROWClassifier implements Classifier<Boolean, Double> {
 	}
 
 	@Override
-	public Boolean classify(List<Double> features) {
+	public Boolean classify(double[] features) {
 		if (this.weights == null || this.variance == null) {
-			this.init(features.size());
+			this.init(features.length);
 		}
 
-		double evaluation = MathUtil.dotProduct(this.weights, features);
-		Boolean prediction = evaluation > 0 ? Boolean.TRUE : Boolean.FALSE;
+		double margin = new DoubleMatrix(this.weights).dot(new DoubleMatrix(features));
+		Boolean prediction = margin > 0 ? Boolean.TRUE : Boolean.FALSE;
 
 		return prediction;
 	}
 
 	@Override
-	public void update(Boolean label, List<Double> features) {
+	public void update(Boolean label, double[] features) {
 		if (this.weights == null || this.variance == null) {
-			this.init(features.size());
+			this.init(features.length);
 		}
 
-		double margin = MathUtil.dotProduct(this.weights, features);
+		DoubleMatrix weightsVector = new DoubleMatrix(1, this.weights.length, this.weights);
+		DoubleMatrix varianceMatrix = new DoubleMatrix(this.variance);
+		DoubleMatrix featuresVector = new DoubleMatrix(1, features.length, features);
+
+		double margin = weightsVector.dot(featuresVector);
 
 		double labelAsDouble = label ? 1.0 : -1.0;
 		if (margin * labelAsDouble < 1) {
-			double confidence = MathUtil.dotProduct(features, MathUtil.dotMatrixProduct(features, this.variance));
+
+			double confidence = featuresVector.dot(featuresVector.mmul(varianceMatrix));
+
 			double beta = 1 / (confidence + this.r);
-			double alpha = Math.max(0, beta * (1 - labelAsDouble * MathUtil.dotProduct(features, this.weights)));
-			List<Double> delta = MathUtil.multiply(alpha * labelAsDouble, MathUtil.dotProductMatrix(this.variance, features));
+			double alpha = Math.max(0, beta * (1 - labelAsDouble * margin));
+			DoubleMatrix delta = featuresVector.mmul(varianceMatrix).mul(alpha * labelAsDouble);
 
 			boolean zeroVector = MathUtil.isZeros(delta);
+
 			if (!zeroVector) {
-				this.weights = MathUtil.add(this.weights, delta);
+				this.weights = weightsVector.add(delta).toArray();
 
 				// Matrix library needed!
-				List<Double> sumX = MathUtil.dotProductMatrix(this.variance, features);
-				List<List<Double>> sumXX = MathUtil.vectorProduct(sumX, features);
-				List<List<Double>> betaSumXX = MathUtil.multiplyMatrix(beta, sumXX);
-				List<List<Double>> betaSumXXSum = MathUtil.matrixProduct(betaSumXX, this.variance);
-				this.variance = MathUtil.subtractMatrix(this.variance, betaSumXXSum);
+				DoubleMatrix sumX = featuresVector.mmul(varianceMatrix);
+				DoubleMatrix sumXX = sumX.transpose().mmul(featuresVector);
+				DoubleMatrix betaSumXX = sumXX.mul(beta);
+				DoubleMatrix betaSumXXSum = betaSumXX.mmul(varianceMatrix);
+				this.variance = varianceMatrix.sub(betaSumXXSum).toArray2();
 			}
 		}
 	}
@@ -77,10 +84,13 @@ public class AROWClassifier implements Classifier<Boolean, Double> {
 
 	private void init(int featureSize) {
 		// Init weights
-		this.weights = MathUtil.zeros(featureSize);
+		this.weights = new double[featureSize];
 
 		// Init variance
-		this.variance = MathUtil.identity(featureSize);
+		this.variance = new double[featureSize][featureSize];
+		for (int i = 0; i < featureSize; i++) {
+			this.variance[i][i] = 1.0;
+		}
 	}
 
 	public double getR() {
@@ -91,19 +101,19 @@ public class AROWClassifier implements Classifier<Boolean, Double> {
 		this.r = r;
 	}
 
-	public List<Double> getWeights() {
+	public double[] getWeights() {
 		return weights;
 	}
 
-	public void setWeights(List<Double> weights) {
+	public void setWeights(double[] weights) {
 		this.weights = weights;
 	}
 
-	public List<List<Double>> getVariance() {
+	public double[][] getVariance() {
 		return variance;
 	}
 
-	public void setVariance(List<List<Double>> variance) {
+	public void setVariance(double[][] variance) {
 		this.variance = variance;
 	}
 

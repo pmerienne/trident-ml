@@ -18,32 +18,33 @@ public class RegressorTest {
 	 * @param samples
 	 * @return
 	 */
-	protected double eval(Regressor regressor, List<Sample<Double, Double>> samples) {
+	protected double eval(Regressor regressor, List<Sample<Double>> samples) {
 		double error = 0.0;
 
 		for (int i = 0; i < FOLD_NB; i++) {
-			List<Sample<Double, Double>> training = DatasetUtils.getTrainingFolds(i, FOLD_NB, samples);
-			List<Sample<Double, Double>> eval = DatasetUtils.getEvalFold(i, FOLD_NB, samples);
+			List<Sample<Double>> training = DatasetUtils.getTrainingFolds(i, FOLD_NB, samples);
+			List<Sample<Double>> eval = DatasetUtils.getEvalFold(i, FOLD_NB, samples);
 			error += this.eval(regressor, training, eval);
 		}
 
 		return error / FOLD_NB;
 	}
 
-	protected double eval(Regressor regressor, List<Sample<Double, Double>> training, List<Sample<Double, Double>> eval) {
+	protected double eval(Regressor regressor, List<Sample<Double>> training, List<Sample<Double>> eval) {
 		regressor.reset();
 
 		// Train
-		for (Sample<Double, Double> sample : training) {
+		for (Sample<Double> sample : training) {
 			regressor.update(sample.label, sample.features);
 		}
 
 		// Evaluate
 		double rmse = 0.0;
 		Double actualPrediction;
-		for (Sample<Double, Double> sample : eval) {
+		for (Sample<Double> sample : eval) {
 			actualPrediction = regressor.predict(sample.features);
 			rmse += Math.pow(actualPrediction - sample.label, 2);
+			System.out.println("Was " + sample.label + ", Found " + actualPrediction);
 		}
 
 		return Math.sqrt(rmse / eval.size());

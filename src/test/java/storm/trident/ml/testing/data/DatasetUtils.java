@@ -5,8 +5,8 @@ import java.util.List;
 
 public class DatasetUtils {
 
-	public static <L, F> List<Sample<L, F>> getEvalFold(int foldIndex, int foldNb, List<Sample<L, F>> samples) {
-		List<Sample<L, F>> eval = new ArrayList<Sample<L, F>>();
+	public static <L> List<Sample<L>> getEvalFold(int foldIndex, int foldNb, List<Sample<L>> samples) {
+		List<Sample<L>> eval = new ArrayList<Sample<L>>();
 
 		int start = foldIndex * (samples.size() / foldNb);
 		int end = (foldIndex + 1) * (samples.size() / foldNb);
@@ -20,8 +20,8 @@ public class DatasetUtils {
 		return eval;
 	}
 
-	public static <L, F> List<Sample<L, F>> getTrainingFolds(int foldIndex, int foldNb, List<Sample<L, F>> samples) {
-		List<Sample<L, F>> train = new ArrayList<Sample<L, F>>();
+	public static <L> List<Sample<L>> getTrainingFolds(int foldIndex, int foldNb, List<Sample<L>> samples) {
+		List<Sample<L>> train = new ArrayList<Sample<L>>();
 
 		int start = foldIndex * (samples.size() / foldNb);
 		int end = (foldIndex + 1) * (samples.size() / foldNb);

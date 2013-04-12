@@ -1,13 +1,10 @@
 package storm.trident.ml.regression;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import storm.trident.ml.util.MathUtil;
 
 public class PerceptronRegressor implements Regressor {
 
-	private List<Double> weights;
+	private double[] weights;
 
 	public double learningRate = 0.1;
 
@@ -20,17 +17,17 @@ public class PerceptronRegressor implements Regressor {
 	}
 
 	@Override
-	public Double predict(List<Double> features) {
+	public Double predict(double[] features) {
 		if (this.weights == null) {
-			this.initWeights(features.size());
+			this.initWeights(features.length);
 		}
 
-		Double prediction = MathUtil.dotProduct(this.weights, features);
+		Double prediction = MathUtil.dot(this.weights, features);
 		return prediction;
 	}
 
 	@Override
-	public void update(Double expected, List<Double> features) {
+	public void update(Double expected, double[] features) {
 		Double prediction = this.predict(features);
 
 		if (!expected.equals(prediction)) {
@@ -38,18 +35,15 @@ public class PerceptronRegressor implements Regressor {
 
 			// Get correction
 			Double correction;
-			for (int i = 0; i < features.size(); i++) {
-				correction = features.get(i) * error * this.learningRate;
-				this.weights.set(i, this.weights.get(i) + correction);
+			for (int i = 0; i < features.length; i++) {
+				correction = features[i] * error * this.learningRate;
+				this.weights[i] = this.weights[i] + correction;
 			}
 		}
 	}
 
 	protected void initWeights(int size) {
-		this.weights = new ArrayList<Double>(size);
-		for (int i = 0; i < size; i++) {
-			this.weights.add(0.0);
-		}
+		this.weights = new double[size];
 	}
 
 	@Override
@@ -57,11 +51,11 @@ public class PerceptronRegressor implements Regressor {
 		this.weights = null;
 	}
 
-	public List<Double> getWeights() {
+	public double[] getWeights() {
 		return weights;
 	}
 
-	public void setWeights(List<Double> weights) {
+	public void setWeights(double[] weights) {
 		this.weights = weights;
 	}
 
@@ -71,36 +65,6 @@ public class PerceptronRegressor implements Regressor {
 
 	public void setLearningRate(double learningRate) {
 		this.learningRate = learningRate;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		long temp;
-		temp = Double.doubleToLongBits(learningRate);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		result = prime * result + ((weights == null) ? 0 : weights.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		PerceptronRegressor other = (PerceptronRegressor) obj;
-		if (Double.doubleToLongBits(learningRate) != Double.doubleToLongBits(other.learningRate))
-			return false;
-		if (weights == null) {
-			if (other.weights != null)
-				return false;
-		} else if (!weights.equals(other.weights))
-			return false;
-		return true;
 	}
 
 	@Override

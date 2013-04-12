@@ -1,6 +1,5 @@
 package storm.trident.ml.classification;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -10,25 +9,25 @@ import storm.trident.state.BaseStateUpdater;
 import storm.trident.state.map.MapState;
 import storm.trident.tuple.TridentTuple;
 
-public class ClassifierUpdater<L, F> extends BaseStateUpdater<MapState<Classifier<L, F>>> {
+public class ClassifierUpdater<L> extends BaseStateUpdater<MapState<Classifier<L>>> {
 
 	private static final long serialVersionUID = 1943890181994862536L;
 
 	private String classifierName;
 
-	private Classifier<L, F> initialClassifier;
+	private Classifier<L> initialClassifier;
 
-	public ClassifierUpdater(String classifierName, Classifier<L, F> initialClassifier) {
+	public ClassifierUpdater(String classifierName, Classifier<L> initialClassifier) {
 		this.classifierName = classifierName;
 		this.initialClassifier = initialClassifier;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void updateState(MapState<Classifier<L, F>> state, List<TridentTuple> tuples, TridentCollector collector) {
+	public void updateState(MapState<Classifier<L>> state, List<TridentTuple> tuples, TridentCollector collector) {
 		// Get model
-		List<Classifier<L, F>> classifiers = state.multiGet(KeysUtil.toKeys(this.classifierName));
-		Classifier<L, F> classifier = null;
+		List<Classifier<L>> classifiers = state.multiGet(KeysUtil.toKeys(this.classifierName));
+		Classifier<L> classifier = null;
 		if (classifiers != null && !classifiers.isEmpty()) {
 			classifier = classifiers.get(0);
 		}
@@ -40,7 +39,7 @@ public class ClassifierUpdater<L, F> extends BaseStateUpdater<MapState<Classifie
 
 		// Update model
 		L label;
-		List<F> features;
+		double[] features;
 		for (TridentTuple tuple : tuples) {
 			label = this.extractLabel(tuple);
 			features = this.extractFeatures(tuple);
@@ -51,11 +50,10 @@ public class ClassifierUpdater<L, F> extends BaseStateUpdater<MapState<Classifie
 		state.multiPut(KeysUtil.toKeys(this.classifierName), Arrays.asList(classifier));
 	}
 
-	@SuppressWarnings("unchecked")
-	protected List<F> extractFeatures(TridentTuple tuple) {
-		List<F> features = new ArrayList<F>();
+	protected double[] extractFeatures(TridentTuple tuple) {
+		double[] features = new double[tuple.size() - 1];
 		for (int i = 1; i < tuple.size(); i++) {
-			features.add((F) tuple.get(i));
+			features[i - 1] = tuple.getDouble(i);
 		}
 		return features;
 	}

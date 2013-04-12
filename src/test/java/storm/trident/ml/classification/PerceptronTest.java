@@ -13,7 +13,7 @@ public class PerceptronTest extends ClassifierTest {
 
 	@Test
 	public void testWithNand() {
-		List<Sample<Boolean, Double>> samples = Datasets.generatedNandSamples(100);
+		List<Sample<Boolean>> samples = Datasets.generatedNandSamples(100);
 		double error = this.eval(new PerceptronClassifier(), samples);
 		assertTrue("Error " + error + " is to big!", error < 0.001);
 	}

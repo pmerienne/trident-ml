@@ -14,4 +14,10 @@ public class PARegressorTest extends RegressorTest {
 		assertTrue("Error " + error + " is to big!", error <= 0.01);
 	}
 
+	@Test
+	public void testWithBirthsData() {
+		double error = this.eval(new PARegressor(), Datasets.BIRTHS_SAMPLES);
+		assertTrue("Error " + error + " is to big!", error <= 0.01);
+	}
+
 }

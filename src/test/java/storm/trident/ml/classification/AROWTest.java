@@ -4,7 +4,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import storm.trident.ml.testing.data.Datasets;
@@ -14,7 +13,7 @@ public class AROWTest extends ClassifierTest {
 
 	@Test
 	public void testWithNand() {
-		List<Sample<Boolean, Double>> samples = Datasets.generatedNandSamples(100);
+		List<Sample<Boolean>> samples = Datasets.generatedNandSamples(100);
 		double error = this.eval(new AROWClassifier(), samples);
 		assertTrue("Error " + error + " is to big!", error < 0.01);
 	}
@@ -25,7 +24,6 @@ public class AROWTest extends ClassifierTest {
 		assertTrue("Error " + error + " is to big!", error <= 0.01);
 	}
 
-	@Ignore("Too long!")
 	@Test
 	public void testWithSPAMData() {
 		double error = this.eval(new AROWClassifier(), Datasets.SPAM_SAMPLES);

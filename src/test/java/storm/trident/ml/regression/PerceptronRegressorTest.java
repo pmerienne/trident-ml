@@ -14,4 +14,9 @@ public class PerceptronRegressorTest extends RegressorTest {
 		assertTrue("Error " + error + " is to big!", error <= 0.001);
 	}
 
+	@Test
+	public void testWithBirthsData() {
+		double error = this.eval(new PerceptronRegressor(), Datasets.BIRTHS_SAMPLES);
+		assertTrue("Error " + error + " is to big!", error <= 0.01);
+	}
 }

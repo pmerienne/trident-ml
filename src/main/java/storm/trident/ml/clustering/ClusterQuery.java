@@ -10,7 +10,7 @@ import storm.trident.state.map.MapState;
 import storm.trident.tuple.TridentTuple;
 import backtype.storm.tuple.Values;
 
-public class ClusterQuery<F> extends BaseQueryFunction<MapState<Clusterer<F>>, Integer> {
+public class ClusterQuery extends BaseQueryFunction<MapState<Clusterer>, Integer> {
 
 	private static final long serialVersionUID = -2431540558642267325L;
 
@@ -21,15 +21,15 @@ public class ClusterQuery<F> extends BaseQueryFunction<MapState<Clusterer<F>>, I
 	}
 
 	@Override
-	public List<Integer> batchRetrieve(MapState<Clusterer<F>> state, List<TridentTuple> tuples) {
+	public List<Integer> batchRetrieve(MapState<Clusterer> state, List<TridentTuple> tuples) {
 		List<Integer> clusterIndexes = new ArrayList<Integer>();
 
-		List<Clusterer<F>> clusterers = state.multiGet(KeysUtil.toKeys(this.clustererName));
+		List<Clusterer> clusterers = state.multiGet(KeysUtil.toKeys(this.clustererName));
 		if (clusterers != null && !clusterers.isEmpty()) {
-			Clusterer<F> clusterer = clusterers.get(0);
+			Clusterer clusterer = clusterers.get(0);
 
 			Integer clustererIndex;
-			List<F> features;
+			double[] features;
 			for (TridentTuple tuple : tuples) {
 				features = this.extractFeatures(tuple);
 				clustererIndex = clusterer.classify(features);
@@ -40,11 +40,10 @@ public class ClusterQuery<F> extends BaseQueryFunction<MapState<Clusterer<F>>, I
 		return clusterIndexes;
 	}
 
-	@SuppressWarnings("unchecked")
-	protected List<F> extractFeatures(TridentTuple tuple) {
-		List<F> features = new ArrayList<F>();
+	protected double[] extractFeatures(TridentTuple tuple) {
+		double[] features = new double[tuple.size()];
 		for (int i = 0; i < tuple.size(); i++) {
-			features.add((F) tuple.get(i));
+			features[i] = tuple.getDouble(i);
 		}
 		return features;
 	}

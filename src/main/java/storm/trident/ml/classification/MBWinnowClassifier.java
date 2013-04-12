@@ -1,8 +1,5 @@
 package storm.trident.ml.classification;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import storm.trident.ml.util.MathUtil;
 
 /**
@@ -12,19 +9,19 @@ import storm.trident.ml.util.MathUtil;
  * @author pmerienne
  * 
  */
-public class MBWinnowClassifier implements Classifier<Boolean, Double> {
+public class MBWinnowClassifier implements Classifier<Boolean> {
 
 	private static final long serialVersionUID = -5163481593640555140L;
 
 	/**
 	 * Positive model
 	 */
-	private List<Double> u;
+	private double[] u;
 
 	/**
 	 * Negative model
 	 */
-	private List<Double> v;
+	private double[] v;
 
 	public double promotion = 1.5;
 	public double demotion = 0.5;
@@ -43,38 +40,38 @@ public class MBWinnowClassifier implements Classifier<Boolean, Double> {
 	}
 
 	@Override
-	public Boolean classify(List<Double> features) {
+	public Boolean classify(double[] features) {
 		if (this.u == null || this.v == null) {
-			this.init(features.size());
+			this.init(features.length);
 		}
 
-		Double score = MathUtil.dotProduct(features, this.u) - MathUtil.dotProduct(features, this.v) - this.threshold;
+		Double score = MathUtil.dot(features, this.u) - MathUtil.dot(features, this.v) - this.threshold;
 
 		Boolean prediction = score >= 0 ? Boolean.TRUE : Boolean.FALSE;
 		return prediction;
 	}
 
 	@Override
-	public void update(Boolean label, List<Double> features) {
+	public void update(Boolean label, double[] features) {
 		if (this.u == null || this.v == null) {
-			this.init(features.size());
+			this.init(features.length);
 		}
 
-		Double score = MathUtil.dotProduct(features, this.u) - MathUtil.dotProduct(features, this.v) - this.threshold;
+		Double score = MathUtil.dot(features, this.u) - MathUtil.dot(features, this.v) - this.threshold;
 
 		// The model is updated only when a mistake is made
 		double yt = label ? 1.0 : -1.0;
 		if (score * yt <= this.margin) {
-			for (int i = 0; i < features.size(); i++) {
-				if (features.get(i) > 0) {
+			for (int i = 0; i < features.length; i++) {
+				if (features[i] > 0) {
 					if (label) {
 						// Promotion step
-						this.u.set(i, this.u.get(i) * this.promotion * (1 + features.get(i)));
-						this.v.set(i, this.v.get(i) * this.demotion * (1 - features.get(i)));
+						this.u[i] = this.u[i] * this.promotion * (1 + features[i]);
+						this.v[i] = this.v[i] * this.demotion * (1 - features[i]);
 					} else {
 						// Demotion step
-						this.u.set(i, this.u.get(i) * this.demotion * (1 - features.get(i)));
-						this.v.set(i, this.v.get(i) * this.promotion * (1 + features.get(i)));
+						this.u[i] = this.u[i] * this.demotion * (1 - features[i]);
+						this.v[i] = this.v[i] * this.promotion * (1 + features[i]);
 					}
 				}
 			}
@@ -83,12 +80,12 @@ public class MBWinnowClassifier implements Classifier<Boolean, Double> {
 
 	protected void init(int featureSize) {
 		// Init models
-		this.u = new ArrayList<Double>(featureSize);
-		this.v = new ArrayList<Double>(featureSize);
+		this.u = new double[featureSize];
+		this.v = new double[featureSize];
 
 		for (int i = 0; i < featureSize; i++) {
-			this.u.add(2 * this.threshold / featureSize);
-			this.v.add(this.threshold / featureSize);
+			this.u[i] = 2 * this.threshold / featureSize;
+			this.v[i] = this.threshold / featureSize;
 		}
 	}
 
@@ -98,20 +95,28 @@ public class MBWinnowClassifier implements Classifier<Boolean, Double> {
 		this.v = null;
 	}
 
-	public List<Double> getU() {
+	public double[] getU() {
 		return u;
 	}
 
-	public void setU(List<Double> u) {
+	public void setU(double[] u) {
 		this.u = u;
 	}
 
-	public List<Double> getV() {
+	public double[] getV() {
 		return v;
 	}
 
-	public void setV(List<Double> v) {
+	public void setV(double[] v) {
 		this.v = v;
+	}
+
+	public double getMargin() {
+		return margin;
+	}
+
+	public void setMargin(double margin) {
+		this.margin = margin;
 	}
 
 	public double getPromotion() {
@@ -140,7 +145,7 @@ public class MBWinnowClassifier implements Classifier<Boolean, Double> {
 
 	@Override
 	public String toString() {
-		return "BWinnowClassifier [promotion=" + promotion + ", demotion=" + demotion + ", threshold=" + threshold + "]";
+		return "MBWinnowClassifier [promotion=" + promotion + ", demotion=" + demotion + ", threshold=" + threshold + ", margin=" + margin + "]";
 	}
 
 }

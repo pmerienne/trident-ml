@@ -1,8 +1,5 @@
 package storm.trident.ml.regression;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import storm.trident.ml.util.MathUtil;
 
 /**
@@ -19,7 +16,7 @@ public class PARegressor implements Regressor {
 
 	private static final long serialVersionUID = -5163481593640555140L;
 
-	private List<Double> weights;
+	private double[] weights;
 
 	private Double epsilon = 0.01;
 
@@ -31,19 +28,19 @@ public class PARegressor implements Regressor {
 	}
 
 	@Override
-	public Double predict(List<Double> features) {
+	public Double predict(double[] features) {
 		if (this.weights == null) {
-			this.init(features.size());
+			this.init(features.length);
 		}
 
-		Double prediction = MathUtil.dotProduct(features, this.weights);
+		Double prediction = MathUtil.dot(features, this.weights);
 		return prediction;
 	}
 
 	@Override
-	public void update(Double expected, List<Double> features) {
+	public void update(Double expected, double[] features) {
 		if (this.weights == null) {
-			this.init(features.size());
+			this.init(features.length);
 		}
 
 		Double prediction = this.predict(features);
@@ -52,16 +49,13 @@ public class PARegressor implements Regressor {
 		double loss = Math.max(0.0, Math.abs(prediction - expected) - this.epsilon);
 		double update = loss / Math.pow(MathUtil.norm(features), 2);
 
-		List<Double> scaledFeatures = MathUtil.multiply(features, update * sign);
+		double[] scaledFeatures = MathUtil.mult(features, update * sign);
 		this.weights = MathUtil.add(this.weights, scaledFeatures);
 	}
 
 	protected void init(int featureSize) {
 		// Init weights
-		this.weights = new ArrayList<Double>(featureSize);
-		for (int i = 0; i < featureSize; i++) {
-			this.weights.add(0.0);
-		}
+		this.weights = new double[featureSize];
 	}
 
 	@Override
@@ -69,37 +63,20 @@ public class PARegressor implements Regressor {
 		this.weights = null;
 	}
 
-	public List<Double> getWeights() {
+	public double[] getWeights() {
 		return weights;
 	}
 
-	public void setWeights(List<Double> weights) {
+	public void setWeights(double[] weights) {
 		this.weights = weights;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((weights == null) ? 0 : weights.hashCode());
-		return result;
+	public Double getEpsilon() {
+		return epsilon;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		PARegressor other = (PARegressor) obj;
-		if (weights == null) {
-			if (other.weights != null)
-				return false;
-		} else if (!weights.equals(other.weights))
-			return false;
-		return true;
+	public void setEpsilon(Double epsilon) {
+		this.epsilon = epsilon;
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 package storm.trident.ml.clustering;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,21 +8,19 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
 import org.junit.Test;
 
-import storm.trident.ml.clustering.KMeans;
 import storm.trident.ml.testing.RandEvaluator;
 import storm.trident.ml.testing.data.Sample;
 
 public class KMeansTest {
 
 	private final static File CLUSTERING_FILE = new File("src/test/resources/clustering-data.csv");
-	private final static List<Sample<Integer, Double>> clusteringSamples = new ArrayList<Sample<Integer, Double>>();
+	private final static List<Sample<Integer>> clusteringSamples = new ArrayList<Sample<Integer>>();
 	static {
 		try {
 			loadClusteringData();
@@ -36,21 +34,21 @@ public class KMeansTest {
 		// Given
 		int nbCluster = 5;
 		KMeans kMeans = new KMeans(nbCluster);
-		List<Sample<Integer, Double>> samples = this.loadGaussianSamples(nbCluster, 500);
+		List<Sample<Integer>> samples = this.loadGaussianSamples(nbCluster, 500);
 
 		int maxTrainingCount = (int) (samples.size() * 0.80);
-		List<Sample<Integer, Double>> training = samples.subList(0, maxTrainingCount);
-		List<Sample<Integer, Double>> eval = samples.subList(maxTrainingCount, samples.size());
+		List<Sample<Integer>> training = samples.subList(0, maxTrainingCount);
+		List<Sample<Integer>> eval = samples.subList(maxTrainingCount, samples.size());
 
 		// When
-		for (Sample<Integer, Double> sample : training) {
+		for (Sample<Integer> sample : training) {
 			kMeans.update(sample.features);
 		}
 
 		// Then
 		RandEvaluator randEvaluator = new RandEvaluator();
 		double randIndex = randEvaluator.evaluate(kMeans, eval);
-		assertTrue(randIndex > 0.80);
+		assertTrue("RAND index " + randIndex + "  isn't good enough : ", randIndex > 0.80);
 	}
 
 	@Test
@@ -59,28 +57,28 @@ public class KMeansTest {
 		KMeans kMeans = new KMeans(7);
 
 		int maxTrainingCount = (int) (clusteringSamples.size() * 0.80);
-		List<Sample<Integer, Double>> training = clusteringSamples.subList(0, maxTrainingCount);
-		List<Sample<Integer, Double>> eval = clusteringSamples.subList(maxTrainingCount, clusteringSamples.size());
+		List<Sample<Integer>> training = clusteringSamples.subList(0, maxTrainingCount);
+		List<Sample<Integer>> eval = clusteringSamples.subList(maxTrainingCount, clusteringSamples.size());
 
 		// When
-		for (Sample<Integer, Double> sample : training) {
+		for (Sample<Integer> sample : training) {
 			kMeans.update(sample.features);
 		}
 
 		// Then
 		RandEvaluator randEvaluator = new RandEvaluator();
 		double randIndex = randEvaluator.evaluate(kMeans, eval);
-		assertTrue(randIndex > 0.80);
+		assertTrue("RAND index " + randIndex + "  isn't good enough : ", randIndex > 0.70);
 	}
 
-	protected List<Sample<Integer, Double>> loadGaussianSamples(int nbCluster, int nbSamples) {
+	protected List<Sample<Integer>> loadGaussianSamples(int nbCluster, int nbSamples) {
 		Random random = new Random();
 
-		List<Sample<Integer, Double>> samples = new ArrayList<Sample<Integer, Double>>();
+		List<Sample<Integer>> samples = new ArrayList<Sample<Integer>>();
 		for (int i = 0; i < nbSamples; i++) {
 			Integer label = random.nextInt(nbCluster);
-			List<Double> features = Arrays.asList(label + random.nextDouble(), -label + random.nextDouble(), random.nextDouble());
-			Sample<Integer, Double> sample = new Sample<Integer, Double>(label, features);
+			double[] features = new double[] { label + random.nextDouble() * 1.25, -label + random.nextDouble() * 1.25, random.nextDouble() };
+			Sample<Integer> sample = new Sample<Integer>(label, features);
 			samples.add(sample);
 		}
 
@@ -99,12 +97,12 @@ public class KMeansTest {
 
 					Integer label = Integer.parseInt(values[10]);
 
-					List<Double> features = new ArrayList<Double>();
+					double[] features = new double[8];
 					for (int i = 1; i < 9; i++) {
-						features.add(Double.parseDouble(values[i]));
+						features[i - 1] = Double.parseDouble(values[i]);
 					}
 
-					clusteringSamples.add(new Sample<Integer, Double>(label, features));
+					clusteringSamples.add(new Sample<Integer>(label, features));
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}

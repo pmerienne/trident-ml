@@ -1,13 +1,12 @@
 package storm.trident.ml.testing.data;
 
-import java.util.List;
 
-public class Sample<L, F> {
+public class Sample<L> {
 
 	public final L label;
-	public final List<F> features;
+	public final double[] features;
 
-	public Sample(L label, List<F> features) {
+	public Sample(L label, double[] features) {
 		this.label = label;
 		this.features = features;
 	}
@@ -16,7 +15,7 @@ public class Sample<L, F> {
 		return label;
 	}
 
-	public List<F> getFeatures() {
+	public double[] getFeatures() {
 		return features;
 	}
 

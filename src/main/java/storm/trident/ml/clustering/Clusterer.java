@@ -2,7 +2,7 @@ package storm.trident.ml.clustering;
 
 import java.util.List;
 
-public interface Clusterer<F> {
+public interface Clusterer {
 
 	/**
 	 * Classifies a given sample and updates clusters.
@@ -10,8 +10,7 @@ public interface Clusterer<F> {
 	 * @param features
 	 * @return
 	 */
-	Integer classify(List<F> features);
-
+	Integer classify(double[] features);
 
 	/**
 	 * Updates clusters with a given sample and return classification.
@@ -19,20 +18,20 @@ public interface Clusterer<F> {
 	 * @param features
 	 * @return
 	 */
-	Integer update(List<F> features);
-	
+	Integer update(double[] features);
+
 	/**
 	 * Predicts the cluster memberships for a given instance.
 	 * 
 	 * @param features
 	 * @return
 	 */
-	List<Double> distribution(List<F> features);
+	double[] distribution(double[] features);
 
 	/**
 	 * Returns learned clusters as a {@link List} of feature's means
 	 * 
 	 * @return
 	 */
-	List<List<F>> getCentroids();
+	double[][] getCentroids();
 }

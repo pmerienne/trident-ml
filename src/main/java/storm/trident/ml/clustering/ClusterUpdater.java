@@ -1,6 +1,5 @@
 package storm.trident.ml.clustering;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -10,25 +9,24 @@ import storm.trident.state.BaseStateUpdater;
 import storm.trident.state.map.MapState;
 import storm.trident.tuple.TridentTuple;
 
-public class ClusterUpdater<F> extends BaseStateUpdater<MapState<Clusterer<F>>> {
+public class ClusterUpdater extends BaseStateUpdater<MapState<Clusterer>> {
 
 	private static final long serialVersionUID = -1580744366864902217L;
 
 	private String clustererName;
 
-	private Clusterer<F> initialClusterer;
+	private Clusterer initialClusterer;
 
-	public ClusterUpdater(String clustererName, Clusterer<F> initialClusterer) {
+	public ClusterUpdater(String clustererName, Clusterer initialClusterer) {
 		this.clustererName = clustererName;
 		this.initialClusterer = initialClusterer;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public void updateState(MapState<Clusterer<F>> state, List<TridentTuple> tuples, TridentCollector collector) {
+	public void updateState(MapState<Clusterer> state, List<TridentTuple> tuples, TridentCollector collector) {
 		// Get model
-		List<Clusterer<F>> clusterers = state.multiGet(KeysUtil.toKeys(this.clustererName));
-		Clusterer<F> clusterer = null;
+		List<Clusterer> clusterers = state.multiGet(KeysUtil.toKeys(this.clustererName));
+		Clusterer clusterer = null;
 		if (clusterers != null && !clusterers.isEmpty()) {
 			clusterer = clusterers.get(0);
 		}
@@ -39,7 +37,7 @@ public class ClusterUpdater<F> extends BaseStateUpdater<MapState<Clusterer<F>>> 
 		}
 
 		// Update model
-		List<F> features;
+		double[] features;
 		for (TridentTuple tuple : tuples) {
 			features = this.extractFeatures(tuple);
 			clusterer.update(features);
@@ -49,11 +47,10 @@ public class ClusterUpdater<F> extends BaseStateUpdater<MapState<Clusterer<F>>> 
 		state.multiPut(KeysUtil.toKeys(this.clustererName), Arrays.asList(clusterer));
 	}
 
-	@SuppressWarnings("unchecked")
-	private List<F> extractFeatures(TridentTuple tuple) {
-		List<F> features = new ArrayList<F>();
+	protected double[] extractFeatures(TridentTuple tuple) {
+		double[] features = new double[tuple.size()];
 		for (int i = 0; i < tuple.size(); i++) {
-			features.add((F) tuple.get(i));
+			features[i] = tuple.getDouble(i);
 		}
 		return features;
 	}
@@ -66,44 +63,12 @@ public class ClusterUpdater<F> extends BaseStateUpdater<MapState<Clusterer<F>>> 
 		this.clustererName = clustererName;
 	}
 
-	public Clusterer<F> getInitialClusterer() {
+	public Clusterer getInitialClusterer() {
 		return initialClusterer;
 	}
 
-	public void setInitialClusterer(Clusterer<F> initialClusterer) {
+	public void setInitialClusterer(Clusterer initialClusterer) {
 		this.initialClusterer = initialClusterer;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((clustererName == null) ? 0 : clustererName.hashCode());
-		result = prime * result + ((initialClusterer == null) ? 0 : initialClusterer.hashCode());
-		return result;
-	}
-
-	@SuppressWarnings("rawtypes")
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		ClusterUpdater other = (ClusterUpdater) obj;
-		if (clustererName == null) {
-			if (other.clustererName != null)
-				return false;
-		} else if (!clustererName.equals(other.clustererName))
-			return false;
-		if (initialClusterer == null) {
-			if (other.initialClusterer != null)
-				return false;
-		} else if (!initialClusterer.equals(other.initialClusterer))
-			return false;
-		return true;
 	}
 
 	@Override

@@ -1,15 +1,12 @@
 package storm.trident.ml.classification;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import storm.trident.ml.util.MathUtil;
 
-public class WinnowClassifier implements Classifier<Boolean, Double> {
+public class WinnowClassifier implements Classifier<Boolean> {
 
 	private static final long serialVersionUID = -5163481593640555140L;
 
-	private List<Double> weights;
+	private double[] weights;
 	public double promotion = 1.5;
 	public double demotion = 0.5;
 	public double threshold = 1.0;
@@ -24,32 +21,32 @@ public class WinnowClassifier implements Classifier<Boolean, Double> {
 	}
 
 	@Override
-	public Boolean classify(List<Double> features) {
+	public Boolean classify(double[] features) {
 		if (this.weights == null) {
-			this.init(features.size());
+			this.init(features.length);
 		}
 
-		Double evaluation = MathUtil.dotProduct(features, this.weights);
+		Double evaluation = MathUtil.dot(features, this.weights);
 
 		Boolean prediction = evaluation >= this.threshold ? Boolean.TRUE : Boolean.FALSE;
 		return prediction;
 	}
 
 	@Override
-	public void update(Boolean label, List<Double> features) {
+	public void update(Boolean label, double[] features) {
 		Boolean predictedLabel = this.classify(features);
 
 		// The model is updated only when a mistake is made
 		if (!label.equals(predictedLabel)) {
 
-			for (int i = 0; i < features.size(); i++) {
-				if (features.get(i) * this.weights.get(i) > 0) {
+			for (int i = 0; i < features.length; i++) {
+				if (features[i] * this.weights[i] > 0) {
 					if (predictedLabel) {
 						// Demotion step
-						this.weights.set(i, this.weights.get(i) * this.demotion);
+						this.weights[i] = this.weights[i] * this.demotion;
 					} else {
 						// Promotion step
-						this.weights.set(i, this.weights.get(i) * this.promotion);
+						this.weights[i] = this.weights[i] * this.promotion;
 					}
 				}
 			}
@@ -58,9 +55,9 @@ public class WinnowClassifier implements Classifier<Boolean, Double> {
 
 	protected void init(int featureSize) {
 		// Init weights
-		this.weights = new ArrayList<Double>(featureSize);
+		this.weights = new double[featureSize];
 		for (int i = 0; i < featureSize; i++) {
-			this.weights.add(this.threshold / featureSize);
+			this.weights[i] = this.threshold / featureSize;
 		}
 	}
 
@@ -69,11 +66,11 @@ public class WinnowClassifier implements Classifier<Boolean, Double> {
 		this.weights = null;
 	}
 
-	public List<Double> getWeights() {
+	public double[] getWeights() {
 		return weights;
 	}
 
-	public void setWeights(List<Double> weights) {
+	public void setWeights(double[] weights) {
 		this.weights = weights;
 	}
 
@@ -99,44 +96,6 @@ public class WinnowClassifier implements Classifier<Boolean, Double> {
 
 	public void setDemotion(double demotion) {
 		this.demotion = demotion;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		long temp;
-		temp = Double.doubleToLongBits(demotion);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		temp = Double.doubleToLongBits(promotion);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		temp = Double.doubleToLongBits(threshold);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		result = prime * result + ((weights == null) ? 0 : weights.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		WinnowClassifier other = (WinnowClassifier) obj;
-		if (Double.doubleToLongBits(demotion) != Double.doubleToLongBits(other.demotion))
-			return false;
-		if (Double.doubleToLongBits(promotion) != Double.doubleToLongBits(other.promotion))
-			return false;
-		if (Double.doubleToLongBits(threshold) != Double.doubleToLongBits(other.threshold))
-			return false;
-		if (weights == null) {
-			if (other.weights != null)
-				return false;
-		} else if (!weights.equals(other.weights))
-			return false;
-		return true;
 	}
 
 	@Override

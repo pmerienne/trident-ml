@@ -1,15 +1,12 @@
 package storm.trident.ml.classification;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import storm.trident.ml.util.MathUtil;
 
-public class MultiClassPAClassifier implements Classifier<Integer, Double> {
+public class MultiClassPAClassifier implements Classifier<Integer> {
 
 	private static final long serialVersionUID = -5163481593640555140L;
 
-	private List<List<Double>> weightVectors;
+	private double[][] weightVectors;
 
 	private Type type = Type.STANDARD;
 	private Double aggressiveness = 0.001;
@@ -35,19 +32,19 @@ public class MultiClassPAClassifier implements Classifier<Integer, Double> {
 	}
 
 	@Override
-	public Integer classify(List<Double> features) {
+	public Integer classify(double[] features) {
 		if (this.weightVectors == null) {
-			this.initWeightVectors(features.size());
+			this.initWeightVectors(features.length);
 		}
 
 		Integer prediction = null;
 		Double highestScore = -Double.MAX_VALUE;
 
 		Double currentClassScore;
-		List<Double> currentWeightVector;
-		for (int i = 0; i < this.weightVectors.size(); i++) {
-			currentWeightVector = this.weightVectors.get(i);
-			currentClassScore = MathUtil.dotProduct(currentWeightVector, features);
+		double[] currentWeightVector;
+		for (int i = 0; i < this.weightVectors.length; i++) {
+			currentWeightVector = this.weightVectors[i];
+			currentClassScore = MathUtil.dot(currentWeightVector, features);
 			if (currentClassScore > highestScore) {
 				prediction = i;
 				highestScore = currentClassScore;
@@ -58,12 +55,11 @@ public class MultiClassPAClassifier implements Classifier<Integer, Double> {
 	}
 
 	@Override
-	public void update(Integer expectedLabel, List<Double> features) {
+	public void update(Integer expectedLabel, double[] features) {
 		Integer predictedLabel = this.classify(features);
 
 		// lagrange multiplier
-		double loss = 1.0 - (MathUtil.dotProduct(this.weightVectors.get(expectedLabel), features) - MathUtil.dotProduct(this.weightVectors.get(predictedLabel),
-				features));
+		double loss = 1.0 - (MathUtil.dot(this.weightVectors[expectedLabel], features) - MathUtil.dot(this.weightVectors[predictedLabel], features));
 		double tau = 0.0;
 
 		if (Type.STANDARD.equals(this.type)) {
@@ -74,25 +70,24 @@ public class MultiClassPAClassifier implements Classifier<Integer, Double> {
 			tau = 0.5 * (loss / (Math.pow(MathUtil.norm(features), 2) + (1 / (2 * this.aggressiveness))));
 		}
 
-		List<Double> currentWeightVector;
-		for (int i = 0; i < this.weightVectors.size(); i++) {
-			currentWeightVector = this.weightVectors.get(i);
+		double[] currentWeightVector;
+		for (int i = 0; i < this.weightVectors.length; i++) {
+			currentWeightVector = this.weightVectors[i];
 			if (i != expectedLabel && i != predictedLabel) {
 				// No change
 			} else if (i == expectedLabel) {
-				this.weightVectors.set(i, MathUtil.add(currentWeightVector, MathUtil.multiply(features, tau)));
+				this.weightVectors[i] = MathUtil.add(currentWeightVector, MathUtil.mult(features, tau));
 			} else if (i == predictedLabel) {
-				this.weightVectors.set(i, MathUtil.subtract(currentWeightVector, MathUtil.multiply(features, tau)));
+				this.weightVectors[i] = MathUtil.subtract(currentWeightVector, MathUtil.mult(features, tau));
 			}
 		}
 	}
 
 	private void initWeightVectors(int featureSize) {
-		this.weightVectors = new ArrayList<List<Double>>(this.nbClasses);
+		this.weightVectors = new double[this.nbClasses][featureSize];
 		for (int i = 0; i < this.nbClasses; i++) {
-			this.weightVectors.add(new ArrayList<Double>(featureSize));
 			for (int j = 0; j < featureSize; j++) {
-				this.weightVectors.get(i).add(0.0);
+				this.weightVectors[i][j] = 0.0;
 			}
 		}
 	}
@@ -101,13 +96,29 @@ public class MultiClassPAClassifier implements Classifier<Integer, Double> {
 	public void reset() {
 		this.weightVectors = null;
 	}
-	
-	public List<List<Double>> getWeightVectors() {
+
+	public double[][] getWeightVectors() {
 		return weightVectors;
 	}
 
-	public void setWeightVectors(List<List<Double>> weightVectors) {
+	public void setWeightVectors(double[][] weightVectors) {
 		this.weightVectors = weightVectors;
+	}
+
+	public Type getType() {
+		return type;
+	}
+
+	public void setType(Type type) {
+		this.type = type;
+	}
+
+	public Double getAggressiveness() {
+		return aggressiveness;
+	}
+
+	public void setAggressiveness(Double aggressiveness) {
+		this.aggressiveness = aggressiveness;
 	}
 
 	public Integer getNbClasses() {
@@ -119,48 +130,8 @@ public class MultiClassPAClassifier implements Classifier<Integer, Double> {
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((aggressiveness == null) ? 0 : aggressiveness.hashCode());
-		result = prime * result + ((nbClasses == null) ? 0 : nbClasses.hashCode());
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
-		result = prime * result + ((weightVectors == null) ? 0 : weightVectors.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		MultiClassPAClassifier other = (MultiClassPAClassifier) obj;
-		if (aggressiveness == null) {
-			if (other.aggressiveness != null)
-				return false;
-		} else if (!aggressiveness.equals(other.aggressiveness))
-			return false;
-		if (nbClasses == null) {
-			if (other.nbClasses != null)
-				return false;
-		} else if (!nbClasses.equals(other.nbClasses))
-			return false;
-		if (type != other.type)
-			return false;
-		if (weightVectors == null) {
-			if (other.weightVectors != null)
-				return false;
-		} else if (!weightVectors.equals(other.weightVectors))
-			return false;
-		return true;
-	}
-
-	@Override
 	public String toString() {
-		return "MultiClassPAClassifier [type=" + type + ", aggressiveness=" + aggressiveness + ", nbClasses=" + nbClasses + "]";
+		return "MultiClassPAClassifier [nbClasses=" + nbClasses + ", type=" + type + ", aggressiveness=" + aggressiveness + "]";
 	}
 
 	public static enum Type {

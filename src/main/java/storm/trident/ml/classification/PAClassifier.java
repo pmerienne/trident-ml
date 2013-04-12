@@ -1,8 +1,5 @@
 package storm.trident.ml.classification;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import storm.trident.ml.util.MathUtil;
 
 /**
@@ -15,11 +12,11 @@ import storm.trident.ml.util.MathUtil;
  * @author pmerienne
  * 
  */
-public class PAClassifier implements Classifier<Boolean, Double> {
+public class PAClassifier implements Classifier<Boolean> {
 
 	private static final long serialVersionUID = -5163481593640555140L;
 
-	private List<Double> weights;
+	private double[] weights;
 
 	private Type type = Type.STANDARD;
 	private Double aggressiveness = 0.001;
@@ -37,25 +34,25 @@ public class PAClassifier implements Classifier<Boolean, Double> {
 	}
 
 	@Override
-	public Boolean classify(List<Double> features) {
+	public Boolean classify(double[] features) {
 		if (this.weights == null) {
-			this.init(features.size());
+			this.init(features.length);
 		}
 
-		Double evaluation = MathUtil.dotProduct(features, this.weights);
+		Double evaluation = MathUtil.dot(features, this.weights);
 
 		Boolean prediction = evaluation >= 0 ? Boolean.TRUE : Boolean.FALSE;
 		return prediction;
 	}
 
 	@Override
-	public void update(Boolean expectedLabel, List<Double> features) {
+	public void update(Boolean expectedLabel, double[] features) {
 		if (this.weights == null) {
-			this.init(features.size());
+			this.init(features.length);
 		}
 		Double expectedLabelAsInt = expectedLabel ? 1.0 : -1.0;
 
-		double loss = Math.max(0.0, 1 - (expectedLabelAsInt * MathUtil.dotProduct(this.weights, features)));
+		double loss = Math.max(0.0, 1 - (expectedLabelAsInt * MathUtil.dot(this.weights, features)));
 		double update = 0;
 
 		if (Type.STANDARD.equals(this.type)) {
@@ -66,16 +63,13 @@ public class PAClassifier implements Classifier<Boolean, Double> {
 			update = loss / (Math.pow(MathUtil.norm(features), 2) + (1.0 / (2 * this.aggressiveness)));
 		}
 
-		List<Double> scaledFeatures = MathUtil.multiply(features, update * expectedLabelAsInt);
+		double[] scaledFeatures = MathUtil.mult(features, update * expectedLabelAsInt);
 		this.weights = MathUtil.add(this.weights, scaledFeatures);
 	}
 
 	protected void init(int featureSize) {
 		// Init weights
-		this.weights = new ArrayList<Double>(featureSize);
-		for (int i = 0; i < featureSize; i++) {
-			this.weights.add(0.0);
-		}
+		this.weights = new double[featureSize];
 	}
 
 	@Override
@@ -83,42 +77,33 @@ public class PAClassifier implements Classifier<Boolean, Double> {
 		this.weights = null;
 	}
 
-	public List<Double> getWeights() {
+	public double[] getWeights() {
 		return weights;
 	}
 
-	public void setWeights(List<Double> weights) {
+	public void setWeights(double[] weights) {
 		this.weights = weights;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((weights == null) ? 0 : weights.hashCode());
-		return result;
+	public Type getType() {
+		return type;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		PAClassifier other = (PAClassifier) obj;
-		if (weights == null) {
-			if (other.weights != null)
-				return false;
-		} else if (!weights.equals(other.weights))
-			return false;
-		return true;
+	public void setType(Type type) {
+		this.type = type;
+	}
+
+	public Double getAggressiveness() {
+		return aggressiveness;
+	}
+
+	public void setAggressiveness(Double aggressiveness) {
+		this.aggressiveness = aggressiveness;
 	}
 
 	@Override
 	public String toString() {
-		return "PA [weights=" + weights + "]";
+		return "PAClassifier [type=" + type + ", aggressiveness=" + aggressiveness + "]";
 	}
 
 	public static enum Type {
