@@ -6,15 +6,15 @@ import java.util.List;
 
 import org.junit.Test;
 
+import storm.trident.ml.Instance;
 import storm.trident.ml.classification.MultiClassPAClassifier.Type;
 import storm.trident.ml.testing.data.Datasets;
-import storm.trident.ml.testing.data.Sample;
 
 public class MultiClassPATest extends ClassifierTest {
 
 	@Test
 	public void testWithGaussianData() {
-		List<Sample<Integer>> dataset = Datasets.generateDataForMultiLabelClassification(5000, 10, 10);
+		List<Instance<Integer>> dataset = Datasets.generateDataForMultiLabelClassification(5000, 10, 10);
 		double actualError = this.eval(new MultiClassPAClassifier(10), dataset);
 		double actualError1 = this.eval(new MultiClassPAClassifier(10, Type.PA1), dataset);
 		double actualError2 = this.eval(new MultiClassPAClassifier(10, Type.PA2), dataset);

@@ -11,15 +11,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import storm.trident.ml.Instance;
+
 public class Datasets {
 
 	private final static File USPS_FILE = new File("src/test/resources/usps.csv");
 	private final static File SPAM_FILE = new File("src/test/resources/spam.csv");
 	private final static File BIRTHS_FILE = new File("src/test/resources/births.csv");
 
-	public final static List<Sample<Boolean>> SPAM_SAMPLES = new ArrayList<Sample<Boolean>>();
-	public final static List<Sample<Integer>> USPS_SAMPLES = new ArrayList<Sample<Integer>>();
-	public final static List<Sample<Double>> BIRTHS_SAMPLES = new ArrayList<Sample<Double>>();
+	public final static List<Instance<Boolean>> SPAM_SAMPLES = new ArrayList<Instance<Boolean>>();
+	public final static List<Instance<Integer>> USPS_SAMPLES = new ArrayList<Instance<Integer>>();
+	public final static List<Instance<Double>> BIRTHS_SAMPLES = new ArrayList<Instance<Double>>();
 
 	static {
 		try {
@@ -47,7 +49,7 @@ public class Datasets {
 						features[i - 1] = Double.parseDouble(values[i].split(":")[1]);
 					}
 
-					USPS_SAMPLES.add(new Sample<Integer>(label, features));
+					USPS_SAMPLES.add(new Instance<Integer>(label, features));
 				} catch (Exception ex) {
 					System.out.println("Skipped USPS sample : " + line);
 				}
@@ -78,7 +80,7 @@ public class Datasets {
 						features[i] = rescaled;
 					}
 
-					SPAM_SAMPLES.add(new Sample<Boolean>(label, features));
+					SPAM_SAMPLES.add(new Instance<Boolean>(label, features));
 				} catch (Exception ex) {
 					System.out.println("Skipped PML sample : " + line);
 				}
@@ -107,7 +109,7 @@ public class Datasets {
 						features[i - 1] = Double.parseDouble(values[i]);
 					}
 
-					BIRTHS_SAMPLES.add(new Sample<Double>(label, features));
+					BIRTHS_SAMPLES.add(new Instance<Double>(label, features));
 				} catch (Exception ex) {
 					System.out.println("Skipped PML sample : " + line);
 				}
@@ -120,23 +122,23 @@ public class Datasets {
 		}
 	}
 
-	public static List<Sample<Boolean>> generatedNandSamples(int nb) {
+	public static List<Instance<Boolean>> generatedNandInstances(int nb) {
 		Random random = new Random();
 
-		List<Sample<Boolean>> samples = new ArrayList<Sample<Boolean>>();
+		List<Instance<Boolean>> samples = new ArrayList<Instance<Boolean>>();
 		for (int i = 0; i < nb; i++) {
 			List<Boolean> nandInputs = Arrays.asList(random.nextBoolean(), random.nextBoolean());
 			Boolean label = !(nandInputs.get(0) && nandInputs.get(1));
 			double[] features = new double[] { 1.0, nandInputs.get(0) ? 1.0 : -1.0, nandInputs.get(1) ? 1.0 : -1.0 };
-			samples.add(new Sample<Boolean>(label, features));
+			samples.add(new Instance<Boolean>(label, features));
 		}
 
 		return samples;
 	}
 
-	public static List<Sample<Boolean>> generateDataForClassification(int size, int featureSize) {
+	public static List<Instance<Boolean>> generateDataForClassification(int size, int featureSize) {
 		Random random = new Random();
-		List<Sample<Boolean>> samples = new ArrayList<Sample<Boolean>>();
+		List<Instance<Boolean>> samples = new ArrayList<Instance<Boolean>>();
 
 		for (int i = 0; i < size; i++) {
 			Double label = random.nextDouble() > 0.5 ? 1.0 : -1.0;
@@ -145,15 +147,15 @@ public class Datasets {
 				features[j] = (j % 2 == 0 ? 1.0 : -1.0) * label + random.nextDouble() - 0.5;
 			}
 			features[featureSize] = 1.0;
-			samples.add(new Sample<Boolean>(label > 0, features));
+			samples.add(new Instance<Boolean>(label > 0, features));
 		}
 
 		return samples;
 	}
 
-	public static List<Sample<Integer>> generateDataForMultiLabelClassification(int size, int featureSize, int nbClasses) {
+	public static List<Instance<Integer>> generateDataForMultiLabelClassification(int size, int featureSize, int nbClasses) {
 		Random random = new Random();
-		List<Sample<Integer>> samples = new ArrayList<Sample<Integer>>();
+		List<Instance<Integer>> samples = new ArrayList<Instance<Integer>>();
 
 		for (int i = 0; i < size; i++) {
 			Integer label = random.nextInt(nbClasses);
@@ -161,14 +163,14 @@ public class Datasets {
 			for (int j = 0; j < featureSize; j++) {
 				features[j] = (j % (label + 1) == 0 ? 1.0 : -1.0) + random.nextDouble() - 0.5;
 			}
-			samples.add(new Sample<Integer>(label, features));
+			samples.add(new Instance<Integer>(label, features));
 		}
 
 		return samples;
 	}
 
-	public static List<Sample<Double>> generateDataForRegression(int size, int featureSize) {
-		List<Sample<Double>> samples = new ArrayList<Sample<Double>>();
+	public static List<Instance<Double>> generateDataForRegression(int size, int featureSize) {
+		List<Instance<Double>> samples = new ArrayList<Instance<Double>>();
 
 		Random random = new Random();
 		List<Double> factors = new ArrayList<Double>(featureSize);
@@ -186,7 +188,7 @@ public class Datasets {
 				label += factors.get(j) * feature;
 			}
 
-			samples.add(new Sample<Double>(label, features));
+			samples.add(new Instance<Double>(label, features));
 		}
 
 		return samples;

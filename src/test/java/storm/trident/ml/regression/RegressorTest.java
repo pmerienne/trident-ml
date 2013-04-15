@@ -2,8 +2,8 @@ package storm.trident.ml.regression;
 
 import java.util.List;
 
+import storm.trident.ml.Instance;
 import storm.trident.ml.testing.data.DatasetUtils;
-import storm.trident.ml.testing.data.Sample;
 
 public class RegressorTest {
 
@@ -18,30 +18,30 @@ public class RegressorTest {
 	 * @param samples
 	 * @return
 	 */
-	protected double eval(Regressor regressor, List<Sample<Double>> samples) {
+	protected double eval(Regressor regressor, List<Instance<Double>> samples) {
 		double error = 0.0;
 
 		for (int i = 0; i < FOLD_NB; i++) {
-			List<Sample<Double>> training = DatasetUtils.getTrainingFolds(i, FOLD_NB, samples);
-			List<Sample<Double>> eval = DatasetUtils.getEvalFold(i, FOLD_NB, samples);
+			List<Instance<Double>> training = DatasetUtils.getTrainingFolds(i, FOLD_NB, samples);
+			List<Instance<Double>> eval = DatasetUtils.getEvalFold(i, FOLD_NB, samples);
 			error += this.eval(regressor, training, eval);
 		}
 
 		return error / FOLD_NB;
 	}
 
-	protected double eval(Regressor regressor, List<Sample<Double>> training, List<Sample<Double>> eval) {
+	protected double eval(Regressor regressor, List<Instance<Double>> training, List<Instance<Double>> eval) {
 		regressor.reset();
 
 		// Train
-		for (Sample<Double> sample : training) {
+		for (Instance<Double> sample : training) {
 			regressor.update(sample.label, sample.features);
 		}
 
 		// Evaluate
 		double rmse = 0.0;
 		Double actualPrediction;
-		for (Sample<Double> sample : eval) {
+		for (Instance<Double> sample : eval) {
 			actualPrediction = regressor.predict(sample.features);
 			rmse += Math.pow(actualPrediction - sample.label, 2);
 			System.out.println("Was " + sample.label + ", Found " + actualPrediction);

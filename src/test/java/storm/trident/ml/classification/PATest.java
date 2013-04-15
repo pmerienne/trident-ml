@@ -6,15 +6,15 @@ import java.util.List;
 
 import org.junit.Test;
 
+import storm.trident.ml.Instance;
 import storm.trident.ml.classification.PAClassifier.Type;
 import storm.trident.ml.testing.data.Datasets;
-import storm.trident.ml.testing.data.Sample;
 
 public class PATest extends ClassifierTest {
 
 	@Test
 	public void testWithNand() {
-		List<Sample<Boolean>> samples = Datasets.generatedNandSamples(100);
+		List<Instance<Boolean>> samples = Datasets.generatedNandInstances(100);
 		double error = this.eval(new PAClassifier(), samples);
 		assertTrue("Error " + error + " is to big!", error < 0.01);
 	}

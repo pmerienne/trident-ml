@@ -14,13 +14,13 @@ import java.util.Random;
 
 import org.junit.Test;
 
+import storm.trident.ml.Instance;
 import storm.trident.ml.testing.RandEvaluator;
-import storm.trident.ml.testing.data.Sample;
 
 public class KMeansTest {
 
 	private final static File CLUSTERING_FILE = new File("src/test/resources/clustering-data.csv");
-	private final static List<Sample<Integer>> clusteringSamples = new ArrayList<Sample<Integer>>();
+	private final static List<Instance<Integer>> clusteringInstances = new ArrayList<Instance<Integer>>();
 	static {
 		try {
 			loadClusteringData();
@@ -30,18 +30,18 @@ public class KMeansTest {
 	}
 
 	@Test
-	public void testAgainstGaussianSample() {
+	public void testAgainstGaussianInstance() {
 		// Given
 		int nbCluster = 5;
 		KMeans kMeans = new KMeans(nbCluster);
-		List<Sample<Integer>> samples = this.loadGaussianSamples(nbCluster, 500);
+		List<Instance<Integer>> samples = this.loadGaussianInstances(nbCluster, 500);
 
 		int maxTrainingCount = (int) (samples.size() * 0.80);
-		List<Sample<Integer>> training = samples.subList(0, maxTrainingCount);
-		List<Sample<Integer>> eval = samples.subList(maxTrainingCount, samples.size());
+		List<Instance<Integer>> training = samples.subList(0, maxTrainingCount);
+		List<Instance<Integer>> eval = samples.subList(maxTrainingCount, samples.size());
 
 		// When
-		for (Sample<Integer> sample : training) {
+		for (Instance<Integer> sample : training) {
 			kMeans.update(sample.features);
 		}
 
@@ -56,12 +56,12 @@ public class KMeansTest {
 		// Given
 		KMeans kMeans = new KMeans(7);
 
-		int maxTrainingCount = (int) (clusteringSamples.size() * 0.80);
-		List<Sample<Integer>> training = clusteringSamples.subList(0, maxTrainingCount);
-		List<Sample<Integer>> eval = clusteringSamples.subList(maxTrainingCount, clusteringSamples.size());
+		int maxTrainingCount = (int) (clusteringInstances.size() * 0.80);
+		List<Instance<Integer>> training = clusteringInstances.subList(0, maxTrainingCount);
+		List<Instance<Integer>> eval = clusteringInstances.subList(maxTrainingCount, clusteringInstances.size());
 
 		// When
-		for (Sample<Integer> sample : training) {
+		for (Instance<Integer> sample : training) {
 			kMeans.update(sample.features);
 		}
 
@@ -71,14 +71,14 @@ public class KMeansTest {
 		assertTrue("RAND index " + randIndex + "  isn't good enough : ", randIndex > 0.70);
 	}
 
-	protected List<Sample<Integer>> loadGaussianSamples(int nbCluster, int nbSamples) {
+	protected List<Instance<Integer>> loadGaussianInstances(int nbCluster, int nbInstances) {
 		Random random = new Random();
 
-		List<Sample<Integer>> samples = new ArrayList<Sample<Integer>>();
-		for (int i = 0; i < nbSamples; i++) {
+		List<Instance<Integer>> samples = new ArrayList<Instance<Integer>>();
+		for (int i = 0; i < nbInstances; i++) {
 			Integer label = random.nextInt(nbCluster);
 			double[] features = new double[] { label + random.nextDouble() * 1.25, -label + random.nextDouble() * 1.25, random.nextDouble() };
-			Sample<Integer> sample = new Sample<Integer>(label, features);
+			Instance<Integer> sample = new Instance<Integer>(label, features);
 			samples.add(sample);
 		}
 
@@ -102,12 +102,12 @@ public class KMeansTest {
 						features[i - 1] = Double.parseDouble(values[i]);
 					}
 
-					clusteringSamples.add(new Sample<Integer>(label, features));
+					clusteringInstances.add(new Instance<Integer>(label, features));
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
 
-				Collections.shuffle(clusteringSamples);
+				Collections.shuffle(clusteringInstances);
 			}
 		} finally {
 			is.close();

@@ -2,8 +2,8 @@ package storm.trident.ml.testing;
 
 import java.util.List;
 
+import storm.trident.ml.Instance;
 import storm.trident.ml.clustering.Clusterer;
-import storm.trident.ml.testing.data.Sample;
 
 /**
  * Evaluates clusters using the Rand index : W. M. Rand (1971).
@@ -26,7 +26,7 @@ public class RandEvaluator {
 	 * @param samples
 	 * @return
 	 */
-	public Double evaluate(Clusterer clusterer, List<Sample<Integer>> samples) {
+	public Double evaluate(Clusterer clusterer, List<Instance<Integer>> samples) {
 		double tp = 0;
 		double tn = 0;
 		double fp = 0;
@@ -36,10 +36,10 @@ public class RandEvaluator {
 		for (int i = 0; i < samples.size(); i++) {
 			for (int j = i + 1; j < samples.size(); j++) {
 				if (i != j) {
-					Sample<Integer> sample1 = samples.get(i);
+					Instance<Integer> sample1 = samples.get(i);
 					Integer actual1 = clusterer.classify(sample1.features);
 
-					Sample<Integer> sample2 = samples.get(j);
+					Instance<Integer> sample2 = samples.get(j);
 					Integer actual2 = clusterer.classify(sample2.features);
 
 					if (sample1.label == sample2.label) {

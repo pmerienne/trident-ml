@@ -3,8 +3,6 @@ package storm.trident.ml;
 import java.io.Serializable;
 import java.util.Arrays;
 
-import storm.trident.ml.testing.data.Sample;
-
 public class Instance<L> implements Serializable {
 
 	private static final long serialVersionUID = -5378422729499109652L;
@@ -34,7 +32,7 @@ public class Instance<L> implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((features == null) ? 0 : features.hashCode());
+		result = prime * result + Arrays.hashCode(features);
 		result = prime * result + ((label == null) ? 0 : label.hashCode());
 		return result;
 	}
@@ -48,11 +46,8 @@ public class Instance<L> implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Sample other = (Sample) obj;
-		if (features == null) {
-			if (other.features != null)
-				return false;
-		} else if (!features.equals(other.features))
+		Instance other = (Instance) obj;
+		if (!Arrays.equals(features, other.features))
 			return false;
 		if (label == null) {
 			if (other.label != null)
