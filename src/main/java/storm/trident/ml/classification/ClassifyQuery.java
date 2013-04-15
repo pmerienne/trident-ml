@@ -45,4 +45,5 @@ public class ClassifyQuery<L> extends BaseQueryFunction<MapState<Classifier<L>>,
 	public void execute(TridentTuple tuple, L result, TridentCollector collector) {
 		collector.emit(new Values(result));
 	}
+
 }

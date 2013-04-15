@@ -3,6 +3,7 @@ package storm.trident.ml.testing;
 import java.util.Map;
 import java.util.Random;
 
+import storm.trident.ml.Instance;
 import storm.trident.operation.TridentCollector;
 import storm.trident.spout.IBatchSpout;
 import backtype.storm.task.TopologyContext;
@@ -24,18 +25,18 @@ public class NANDSpout implements IBatchSpout {
 	@Override
 	public void emitBatch(long batchId, TridentCollector collector) {
 		for (int i = 0; i < this.maxBatchSize; i++) {
-			Values values = this.createRandomNAND();
-			collector.emit(values);
+			Instance<Boolean> instance = this.createRandomNAND();
+			collector.emit(new Values(instance));
 		}
 	}
 
-	protected Values createRandomNAND() {
+	protected Instance<Boolean> createRandomNAND() {
 		Boolean x1 = random.nextBoolean();
 		Boolean x2 = random.nextBoolean();
 		Boolean label = !(x1 && x2);
+		double[] features = new double[] { 1.0, x1 ? 1.0 : 0.0, x2 ? 1.0 : 0.0 };
 
-		Values sample = new Values(label, 1.0, x1 ? 1.0 : 0.0, x2 ? 1.0 : 0.0);
-		return sample;
+		return new Instance<Boolean>(label, features);
 	}
 
 	protected Double noise(Double value) {
@@ -59,6 +60,6 @@ public class NANDSpout implements IBatchSpout {
 
 	@Override
 	public Fields getOutputFields() {
-		return new Fields("label", "x0", "x1", "x2");
+		return new Fields("instance");
 	}
 }
