@@ -36,22 +36,22 @@ public class AdaptiveStreamFeatureStatistics implements StreamFeatureStatistics,
 	}
 
 	@Override
-	public long getCount() {
+	public Long getCount() {
 		return count;
 	}
 
 	@Override
-	public double getMean() {
+	public Double getMean() {
 		return this.sum / this.features.size();
 	}
 
 	@Override
-	public double getVariance() {
+	public Double getVariance() {
 		return Math.pow(this.getStdDev(), 2);
 	}
 
 	@Override
-	public double getStdDev() {
+	public Double getStdDev() {
 		return Math.sqrt((this.squaresSum / this.features.size()) - Math.pow(this.sum / this.features.size(), 2));
 	}
 

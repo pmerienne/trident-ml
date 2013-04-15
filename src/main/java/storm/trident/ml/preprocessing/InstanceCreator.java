@@ -6,16 +6,16 @@ import storm.trident.operation.BaseFunction;
 import storm.trident.operation.TridentCollector;
 import storm.trident.tuple.TridentTuple;
 
-public class InstanceWrapper<L> extends BaseFunction {
+public class InstanceCreator<L> extends BaseFunction {
 
 	private static final long serialVersionUID = 3312351524410720639L;
 
 	private boolean withLabel = true;
 
-	public InstanceWrapper() {
+	public InstanceCreator() {
 	}
 
-	public InstanceWrapper(boolean withLabel) {
+	public InstanceCreator(boolean withLabel) {
 		this.withLabel = withLabel;
 	}
 

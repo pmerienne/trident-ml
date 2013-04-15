@@ -18,22 +18,22 @@ public class FixedStreamFeatureStatistics implements StreamFeatureStatistics, Se
 	}
 
 	@Override
-	public long getCount() {
+	public Long getCount() {
 		return count;
 	}
 
 	@Override
-	public double getMean() {
+	public Double getMean() {
 		return mean;
 	}
 
 	@Override
-	public double getVariance() {
+	public Double getVariance() {
 		return m2 / (count - 1);
 	}
 
 	@Override
-	public double getStdDev() {
+	public Double getStdDev() {
 		return Math.sqrt(this.getVariance());
 	}
 

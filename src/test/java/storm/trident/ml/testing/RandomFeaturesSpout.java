@@ -16,7 +16,17 @@ public class RandomFeaturesSpout implements IBatchSpout {
 
 	private int maxBatchSize = 10;
 	private int featureSize = 10;
+	private double variance = 3.0;
+
 	private Random random = new Random();
+
+	public RandomFeaturesSpout() {
+	}
+
+	public RandomFeaturesSpout(int featureSize, double variance) {
+		this.featureSize = featureSize;
+		this.variance = variance;
+	}
 
 	@SuppressWarnings("rawtypes")
 	@Override
@@ -27,9 +37,9 @@ public class RandomFeaturesSpout implements IBatchSpout {
 	@Override
 	public void emitBatch(long batchId, TridentCollector collector) {
 		for (int i = 0; i < this.maxBatchSize; i++) {
-			double[] features = new double[featureSize];
-			for (int j = 0; j < featureSize; j++) {
-				features[j] = j + random.nextGaussian() * 3.0;
+			double[] features = new double[this.featureSize];
+			for (int j = 0; j < this.featureSize; j++) {
+				features[j] = j + this.random.nextGaussian() * this.variance;
 			}
 			collector.emit(new Values(new Instance(features)));
 		}

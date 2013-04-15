@@ -38,7 +38,7 @@ public class Standardizer extends StreamStatisticsUpdater {
 		}
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "rawtypes" })
 	private List<Instance<?>> standardize(StreamStatistics streamStatistics, List<Instance<?>> instances) {
 		List<Instance<?>> standardizedBatchFeatures = new ArrayList<Instance<?>>();
 
@@ -53,17 +53,26 @@ public class Standardizer extends StreamStatisticsUpdater {
 			i++;
 		}
 
-		// Standardize
-		double[] standardizedFeatures;
+		// Standardize each instances
+		Instance standardizedInstance;
 		for (Instance<?> instance : instances) {
-			standardizedFeatures = new double[featuresSize];
-			for (int j = 0; j < instance.features.length; j++) {
-				standardizedFeatures[j] = (instance.features[j] - means[j]) / stdDevs[j];
-			}
-			standardizedBatchFeatures.add(new Instance(instance.label, standardizedFeatures));
+			standardizedInstance = this.standardize(means, stdDevs, instance);
+			standardizedBatchFeatures.add(standardizedInstance);
 		}
 
 		return standardizedBatchFeatures;
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	protected Instance<?> standardize(double[] means, double[] stdDevs, Instance<?> instance) {
+		int featuresSize = means.length;
+
+		double[] standardizedFeatures = new double[featuresSize];
+		for (int j = 0; j < instance.features.length; j++) {
+			standardizedFeatures[j] = (instance.features[j] - means[j]) / stdDevs[j];
+		}
+
+		return new Instance(instance.label, standardizedFeatures);
 	}
 
 }

@@ -4,11 +4,11 @@ public interface StreamFeatureStatistics {
 
 	void update(double feature);
 
-	long getCount();
+	Long getCount();
 
-	double getMean();
+	Double getMean();
 
-	double getVariance();
+	Double getVariance();
 
-	double getStdDev();
+	Double getStdDev();
 }
