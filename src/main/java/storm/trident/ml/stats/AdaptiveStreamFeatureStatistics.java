@@ -7,7 +7,7 @@ public class AdaptiveStreamFeatureStatistics implements StreamFeatureStatistics,
 
 	private static final long serialVersionUID = 6267199325838362436L;
 
-	private long maxSize;
+	private long maxSize = 1000;
 
 	private LinkedList<Double> features = new LinkedList<Double>();
 
