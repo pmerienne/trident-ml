@@ -28,8 +28,8 @@ public class AdaptiveStreamFeatureStatisticsTest {
 		}
 
 		// Then
-		assertEquals(expectedMean, statistics.getMean(), 0.1);
-		assertEquals(stdDev, statistics.getStdDev(), 0.1);
+		assertEquals(expectedMean, statistics.getMean(), 0.2);
+		assertEquals(stdDev, statistics.getStdDev(), 0.2);
 	}
 
 	@Test

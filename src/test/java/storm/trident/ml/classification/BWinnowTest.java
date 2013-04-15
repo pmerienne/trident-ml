@@ -10,7 +10,7 @@ public class BWinnowTest extends ClassifierTest {
 
 	@Test
 	public void testWithGaussianData() {
-		double error = this.eval(new BWinnowClassifier(), Datasets.generateDataForClassification(100, 10));
+		double error = this.eval(new BWinnowClassifier(), Datasets.generateDataForClassification(1000, 10));
 		assertTrue("Error " + error + " is to big!", error < 0.01);
 	}
 
