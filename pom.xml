@@ -41,6 +41,12 @@
 			<version>${jblas.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analyzers</artifactId>
+			<version>3.5.0</version>
+		</dependency>
+
 		<!-- Test -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -54,6 +60,7 @@
 			<version>${mockito.version}</version>
 			<scope>test</scope>
 		</dependency>
+
 	</dependencies>
 
 </project>
