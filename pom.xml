@@ -14,6 +14,7 @@
 
 		<!-- Version dependencies -->
 		<storm.version>0.8.1</storm.version>
+		<jblas.version>1.2.3</jblas.version>
 
 		<junit.version>4.7</junit.version>
 		<mockito.version>1.9.0</mockito.version>
@@ -35,15 +36,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>nz.ac.waikato.cms.weka</groupId>
-			<artifactId>weka-stable</artifactId>
-			<version>3.6.9</version>
-		</dependency>
-
-		<dependency>
 			<groupId>org.jblas</groupId>
 			<artifactId>jblas</artifactId>
-			<version>1.2.3</version>
+			<version>${jblas.version}</version>
 		</dependency>
 
 		<!-- Test -->
