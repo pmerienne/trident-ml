@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import backtype.storm.tuple.Values;
+
 import storm.trident.ml.Instance;
 import storm.trident.ml.util.KeysUtil;
 import storm.trident.operation.TridentCollector;
@@ -37,6 +39,11 @@ public class StreamStatisticsUpdater extends BaseStateUpdater<MapState<StreamSta
 
 		// Save statistics
 		state.multiPut(KeysUtil.toKeys(this.streamName), Arrays.asList(streamStatistics));
+
+		// Emit instance and stats for new stream
+		for (Instance<?> instance : instances) {
+			collector.emit(new Values(instance, streamStatistics));
+		}
 	}
 
 	protected List<Instance<?>> extractInstances(List<TridentTuple> tuples) {
