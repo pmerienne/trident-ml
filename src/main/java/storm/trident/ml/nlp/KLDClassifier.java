@@ -7,14 +7,25 @@ import java.util.Set;
 
 public class KLDClassifier {
 
-	private Integer nbClasses;
 	private List<Vocabulary> classVocabularies = new ArrayList<Vocabulary>();
+	private int maxWordsPerClass = 500000;
+
+	private List<Double> gammas;
+	private List<Double> betas;
+	private Double espilon;
 
 	public KLDClassifier() {
 	}
 
-	public KLDClassifier(Integer nbClasses) {
-		this.nbClasses = nbClasses;
+	public KLDClassifier(int nbClasses) {
+		// Init vocabularies
+		for (int i = 0; i < nbClasses; i++) {
+			this.classVocabularies.add(new Vocabulary());
+		}
+	}
+
+	public KLDClassifier(int nbClasses, int maxWordsPerClass) {
+		this.maxWordsPerClass = maxWordsPerClass;
 
 		// Init vocabularies
 		for (int i = 0; i < nbClasses; i++) {
@@ -22,23 +33,50 @@ public class KLDClassifier {
 		}
 	}
 
-	public double[] score(String document) {
-		double[] score = new double[this.classVocabularies.size()];
+	public int classify(String document) {
+		int classIndex = -1;
+
+		double[] distances = this.distance(document);
+		double minDistance = Double.POSITIVE_INFINITY;
+
+		int i = 0;
+		for (double distance : distances) {
+			if (distance < minDistance) {
+				minDistance = distance;
+				classIndex = i;
+			}
+			i++;
+		}
+
+		return classIndex;
+	}
+
+	public double[] distance(String document) {
+		return this.distance(document, true);
+	}
+
+	public double[] distance(String document, boolean normalize) {
+		double[] distance = new double[this.classVocabularies.size()];
 
 		Vocabulary documentVocabulary = VocabularyBuilder.build(document);
 
 		int i = 0;
 		for (Vocabulary classVocabulary : this.classVocabularies) {
-			score[i] = this.distance(documentVocabulary, classVocabulary);
+			distance[i] = this.distance(documentVocabulary, classVocabulary);
+			if (normalize) {
+				distance[i] /= this.distance(new Vocabulary(), classVocabulary);
+			}
 			i++;
 		}
 
-		return score;
+		return distance;
 	}
 
 	public void update(Integer classIndex, String document) {
 		Vocabulary documentVocabulary = VocabularyBuilder.build(document);
-		this.classVocabularies.get(classIndex).add(documentVocabulary);
+		Vocabulary classVocabulary = this.classVocabularies.get(classIndex);
+		classVocabulary.add(documentVocabulary);
+		classVocabulary.limitWords(this.maxWordsPerClass);
 	}
 
 	protected Double distance(Vocabulary documentVocabulary, Vocabulary classVocabulary) {
@@ -57,7 +95,7 @@ public class KLDClassifier {
 
 	protected Double termProbabilityInCategory(String term, Vocabulary classVocabulary) {
 		Double probability = classVocabulary.frequency(term);
-		if (probability == 0) {
+		if (probability == 0 || probability.equals(Double.NaN)) {
 			probability = this.estimateEpsilon();
 		} else {
 			probability *= this.gamma(classVocabulary);
@@ -68,7 +106,7 @@ public class KLDClassifier {
 
 	protected Double termProbabilityInDocument(String term, Vocabulary documentVocabulary) {
 		Double probability = documentVocabulary.frequency(term);
-		if (probability == 0) {
+		if (probability == 0 || probability.equals(Double.NaN)) {
 			probability = this.estimateEpsilon();
 		} else {
 			probability *= this.beta(documentVocabulary);
@@ -120,7 +158,7 @@ public class KLDClassifier {
 			}
 		}
 
-		return 1 / maxSize.doubleValue();
+		return 1 / (10 * maxSize.doubleValue());
 	}
 
 	private Set<String> createGlobalVocabulary() {
