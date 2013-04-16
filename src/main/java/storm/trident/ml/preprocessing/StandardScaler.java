@@ -12,12 +12,17 @@ public class StandardScaler extends BaseFunction {
 
 	private static final long serialVersionUID = 1740717206768121351L;
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void execute(TridentTuple tuple, TridentCollector collector) {
 		Instance<?> instance = (Instance<?>) tuple.get(0);
 		StreamStatistics streamStatistics = (StreamStatistics) tuple.get(1);
 
+		Instance<?> standardizedInstance = this.standardize(instance, streamStatistics);
+		collector.emit(new Values(standardizedInstance));
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	protected Instance<?> standardize(Instance<?> instance, StreamStatistics streamStatistics) {
 		// init new features
 		int featuresSize = instance.features.length;
 		double[] standardizedFeatures = new double[featuresSize];
@@ -30,7 +35,6 @@ public class StandardScaler extends BaseFunction {
 		}
 
 		Instance<?> standardizedInstance = new Instance(instance.label, standardizedFeatures);
-		collector.emit(new Values(standardizedInstance));
+		return standardizedInstance;
 	}
-
 }

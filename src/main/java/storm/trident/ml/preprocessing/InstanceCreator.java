@@ -1,10 +1,10 @@
 package storm.trident.ml.preprocessing;
 
-import backtype.storm.tuple.Values;
 import storm.trident.ml.Instance;
 import storm.trident.operation.BaseFunction;
 import storm.trident.operation.TridentCollector;
 import storm.trident.tuple.TridentTuple;
+import backtype.storm.tuple.Values;
 
 public class InstanceCreator<L> extends BaseFunction {
 
@@ -19,9 +19,14 @@ public class InstanceCreator<L> extends BaseFunction {
 		this.withLabel = withLabel;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(TridentTuple tuple, TridentCollector collector) {
+		Instance<L> instance = this.createInstance(tuple);
+		collector.emit(new Values(instance));
+	}
+
+	@SuppressWarnings("unchecked")
+	protected Instance<L> createInstance(TridentTuple tuple) {
 		Instance<L> instance = null;
 
 		if (this.withLabel) {
@@ -41,8 +46,6 @@ public class InstanceCreator<L> extends BaseFunction {
 			instance = new Instance<L>(features);
 		}
 
-		collector.emit(new Values(instance));
-
+		return instance;
 	}
-
 }
