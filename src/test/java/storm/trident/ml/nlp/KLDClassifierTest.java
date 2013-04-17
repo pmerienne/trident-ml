@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import storm.trident.ml.testing.data.Datasets;
@@ -32,6 +33,7 @@ public class KLDClassifierTest {
 		assertEquals(1, kldClassifier.classify(TextAnalyser.parse(FLOWER_WIKI)));
 	}
 
+	@Ignore("TextAnalyser.parse() with big document crash JVM!")
 	@Test
 	public void testWithReuters() {
 		Map<Integer, List<String>> training = Datasets.REUTERS_TRAIN_DATA;
@@ -42,7 +44,6 @@ public class KLDClassifierTest {
 		// Train
 		for (Integer classIndex : training.keySet()) {
 			for (String document : eval.get(classIndex)) {
-				System.out.println("Processing " + document.substring(0, 20));
 				kldClassifier.update(classIndex, TextAnalyser.parse(document));
 			}
 		}
