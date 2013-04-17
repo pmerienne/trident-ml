@@ -2,6 +2,7 @@ package storm.trident.ml.nlp;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -15,6 +16,13 @@ public class Vocabulary implements Iterable<String> {
 
 	private Integer size = 0;
 
+	public Vocabulary() {
+	}
+
+	public Vocabulary(List<String> words) {
+		this.addAll(words);
+	}
+
 	public void add(String word) {
 		Integer actualCount = this.wordCounts.get(word);
 		if (actualCount == null) {
@@ -26,18 +34,9 @@ public class Vocabulary implements Iterable<String> {
 		this.size++;
 	}
 
-	public void add(Vocabulary other) {
-		// CAN do better!
-		for (String word : other) {
-			Integer otherCount = other.count(word);
-			Integer actualCount = this.wordCounts.get(word);
-			if (actualCount == null) {
-				actualCount = otherCount;
-			} else {
-				actualCount += otherCount;
-			}
-			this.wordCounts.put(word, actualCount);
-			this.size += otherCount;
+	public void addAll(List<String> words) {
+		for (String word : words) {
+			this.add(word);
 		}
 	}
 
@@ -97,7 +96,7 @@ public class Vocabulary implements Iterable<String> {
 	 * @param <K>
 	 * @param <V>
 	 */
-	protected static class ValueComparableMap<K extends Comparable<K>, V> extends TreeMap<K, V> {
+	private static class ValueComparableMap<K extends Comparable<K>, V> extends TreeMap<K, V> {
 
 		private static final long serialVersionUID = 1476556231893371136L;
 		// A map for doing lookups on the keys for comparison so we don't get

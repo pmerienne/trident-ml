@@ -2,6 +2,8 @@ package storm.trident.ml.nlp;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
+
 import org.junit.Test;
 
 public class VocabularyTest {
@@ -29,6 +31,16 @@ public class VocabularyTest {
 		assertEquals(0.25, vocabulary.frequency("only one"), 0.001);
 		assertEquals(0.5, vocabulary.frequency("we are 2"), 0.001);
 		assertEquals(0.0, vocabulary.frequency("I'm not here"), 0.001);
+	}
+
+	@Test
+	public void testAddAll() {
+		Vocabulary vocabulary = new Vocabulary();
+		vocabulary.addAll(Arrays.asList("only one", "we are 2", "we are 2"));
+
+		assertEquals(1, vocabulary.count("only one").intValue());
+		assertEquals(2, vocabulary.count("we are 2").intValue());
+		assertEquals(0, vocabulary.count("I'm not here").intValue());
 	}
 
 	@Test

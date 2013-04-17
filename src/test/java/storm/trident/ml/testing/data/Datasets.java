@@ -8,7 +8,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import storm.trident.ml.Instance;
@@ -18,16 +20,20 @@ public class Datasets {
 	private final static File USPS_FILE = new File("src/test/resources/usps.csv");
 	private final static File SPAM_FILE = new File("src/test/resources/spam.csv");
 	private final static File BIRTHS_FILE = new File("src/test/resources/births.csv");
+	private final static File REUTEURS_FILE = new File("src/test/resources/reuters.csv");
 
 	public final static List<Instance<Boolean>> SPAM_SAMPLES = new ArrayList<Instance<Boolean>>();
 	public final static List<Instance<Integer>> USPS_SAMPLES = new ArrayList<Instance<Integer>>();
 	public final static List<Instance<Double>> BIRTHS_SAMPLES = new ArrayList<Instance<Double>>();
+	public final static Map<Integer, List<String>> REUTERS_TRAIN_DATA = new HashMap<Integer, List<String>>();
+	public final static Map<Integer, List<String>> REUTERS_EVAL_DATA = new HashMap<Integer, List<String>>();
 
 	static {
 		try {
 			loadUSPSData();
 			loadSPAMData();
 			loadBirthsData();
+			loadReutersData();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -116,6 +122,45 @@ public class Datasets {
 			}
 
 			Collections.shuffle(BIRTHS_SAMPLES);
+		} finally {
+			is.close();
+			br.close();
+		}
+	}
+
+	protected static void loadReutersData() throws IOException {
+		Map<String, Integer> topics = new HashMap<String, Integer>();
+
+		Random random = new Random();
+
+		FileInputStream is = new FileInputStream(REUTEURS_FILE);
+		BufferedReader br = new BufferedReader(new InputStreamReader(is));
+		try {
+			String line;
+			while ((line = br.readLine()) != null) {
+				try {
+					// Get class index
+					String topic = line.split(",")[0];
+					if (!topics.containsKey(topic)) {
+						topics.put(topic, topics.size());
+					}
+					Integer classIndex = topics.get(topic);
+
+					// Get text
+					int startIndex = line.indexOf(" - ");
+					String text = line.substring(startIndex, line.length() - 1);
+
+					// Add to train or eval
+					Map<Integer, List<String>> data = random.nextDouble() < 0.80 ? REUTERS_TRAIN_DATA : REUTERS_EVAL_DATA;
+					if (!data.containsKey(classIndex)) {
+						data.put(classIndex, new ArrayList<String>());
+					}
+					data.get(classIndex).add(text);
+				} catch (Exception ex) {
+					System.out.println("Skipped Reuters sample : " + line);
+				}
+			}
+
 		} finally {
 			is.close();
 			br.close();
