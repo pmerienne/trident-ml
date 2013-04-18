@@ -1,5 +1,6 @@
 package storm.trident.ml.nlp;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -10,7 +11,9 @@ import java.util.TreeMap;
 import com.google.common.base.Functions;
 import com.google.common.collect.Ordering;
 
-public class Vocabulary implements Iterable<String> {
+public class Vocabulary implements Iterable<String>, Serializable {
+
+	private static final long serialVersionUID = 7827671824674205961L;
 
 	private TreeMap<String, Integer> wordCounts = new ValueComparableMap<String, Integer>(Ordering.natural().reverse());
 

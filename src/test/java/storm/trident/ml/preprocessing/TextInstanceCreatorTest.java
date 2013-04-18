@@ -53,7 +53,7 @@ public class TextInstanceCreatorTest {
 
 		String expectedText = "I can't argue with some arguments on argus with argues";
 		TridentTuple tuple = mock(TridentTuple.class);
-		when(tuple.getString(1)).thenReturn(expectedText);
+		when(tuple.getString(0)).thenReturn(expectedText);
 
 		// When
 		TextInstance<Integer> actualInstance = instanceCreator.createInstance(tuple);

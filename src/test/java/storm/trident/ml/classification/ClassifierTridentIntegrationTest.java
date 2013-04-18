@@ -30,13 +30,19 @@ public class ClassifierTridentIntegrationTest {
 			// Build topology
 			TridentTopology toppology = new TridentTopology();
 
-			TridentState perceptronModel = toppology.newStream("nandsamples", new NANDSpout()).partitionPersist(new MemoryMapState.Factory(),
-					new Fields("instance"), new ClassifierUpdater<Boolean>("test", new PerceptronClassifier()));
+			// Training stream
+			TridentState perceptronModel = toppology.newStream("nandsamples", new NANDSpout())
+			// update classifier
+					.partitionPersist(new MemoryMapState.Factory(), new Fields("instance"), new ClassifierUpdater<Boolean>("perceptron", new PerceptronClassifier()));
 
-			toppology.newDRPCStream("predict", localDRPC).each(new Fields("args"), new DRPCArgsToInstance(), new Fields("instance"))
-					.stateQuery(perceptronModel, new Fields("instance"), new ClassifyQuery<Boolean>("test"), new Fields("prediction"))
-					.project(new Fields("prediction"));
-			cluster.submitTopology("wordCounter", new Config(), toppology.build());
+			// Classification stream
+			toppology.newDRPCStream("predict", localDRPC)
+			// convert DRPC args to instance
+					.each(new Fields("args"), new DRPCArgsToInstance(), new Fields("instance"))
+
+					// Query classifier to classify instance
+					.stateQuery(perceptronModel, new Fields("instance"), new ClassifyQuery<Boolean>("perceptron"), new Fields("prediction")).project(new Fields("prediction"));
+			cluster.submitTopology(this.getClass().getSimpleName(), new Config(), toppology.build());
 
 			Thread.sleep(4000);
 

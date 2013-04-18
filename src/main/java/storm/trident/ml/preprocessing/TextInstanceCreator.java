@@ -36,7 +36,7 @@ public class TextInstanceCreator<L> extends BaseFunction {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected TextInstance<L> createInstance(TridentTuple tuple) {
 		L label = this.withLabel ? (L) tuple.get(0) : null;
-		String text = tuple.getString(1);
+		String text = tuple.getString(this.withLabel ? 1 : 0);
 
 		List<String> tokens = this.extractTokens(text);
 

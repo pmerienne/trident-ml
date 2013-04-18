@@ -1,5 +1,6 @@
 package storm.trident.ml.nlp;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -13,7 +14,9 @@ import java.util.Set;
  * @author pmerienne
  * 
  */
-public class KLDClassifier implements TextClassifier, TextFeaturesExtractor {
+public class KLDClassifier implements TextClassifier, TextFeaturesExtractor, Serializable {
+
+	private static final long serialVersionUID = 3869875629653284342L;
 
 	private int maxWordsPerClass = 500000;
 	private double thresholdFactor = 10.0;

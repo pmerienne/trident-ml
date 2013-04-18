@@ -4,8 +4,10 @@ import static org.apache.lucene.util.RamUsageEstimator.NUM_BYTES_CHAR;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Serializable;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -46,24 +48,26 @@ import org.tartarus.snowball.ext.PorterStemmer;
  * @author pmerienne
  * 
  */
-public class TextTokenizer {
+public class TextTokenizer implements Serializable {
+
+	private static final long serialVersionUID = -4307517944955017402L;
 
 	private static final Log LOGGER = LogFactory.getLog(TextTokenizer.class);
 
-	private final static Version LUCENE_VERSION = Version.LUCENE_35;
+	private final transient static Version LUCENE_VERSION = Version.LUCENE_36;
 
-	private Set<?> stopWords = StandardAnalyzer.STOP_WORDS_SET;
-	private Set<?> stemExclusionsSet = CharArraySet.EMPTY_SET;
+	private List<String> stopWords = null;
+	private Set<String> stemExclusionsSet = new HashSet<String>();
 
 	public TextTokenizer() {
 	}
 
 	public TextTokenizer(List<String> stopWords) {
-		this.stopWords = StopFilter.makeStopSet(LUCENE_VERSION, stopWords);
+		this.stopWords = stopWords;
 	}
 
 	public TextTokenizer(List<String> stopWords, Set<String> stemExclusionsSet) {
-		this.stopWords = StopFilter.makeStopSet(LUCENE_VERSION, stopWords);
+		this.stopWords = stopWords;
 		this.stemExclusionsSet = stemExclusionsSet;
 	}
 
@@ -97,24 +101,25 @@ public class TextTokenizer {
 	}
 
 	protected Analyzer createAnalyser() {
-		Analyzer analyzer = new EnglishSpecialAnalyzer(LUCENE_VERSION, this.stopWords, this.stemExclusionsSet);
+		Set<?> luceneStopWords = this.stopWords == null ? StandardAnalyzer.STOP_WORDS_SET : StopFilter.makeStopSet(LUCENE_VERSION, stopWords);
+		Analyzer analyzer = new EnglishSpecialAnalyzer(LUCENE_VERSION, luceneStopWords, this.stemExclusionsSet);
 		return analyzer;
 	}
 
-	public Set<?> getStopWords() {
+	public List<String> getStopWords() {
 		return stopWords;
 	}
 
-	public void setStopWords(Set<?> stopWords) {
+	public void setStopWords(List<String> stopWords) {
 		this.stopWords = stopWords;
 	}
 
-	public Set<?> getStemExclusionsSet() {
-		return stemExclusionsSet;
+	public void setStemExclusionsSet(Set<String> stemExclusionsSet) {
+		this.stemExclusionsSet = stemExclusionsSet;
 	}
 
-	public void setStemExclusionsSet(Set<?> stemExclusionsSet) {
-		this.stemExclusionsSet = stemExclusionsSet;
+	public Set<String> getStemExclusionsSet() {
+		return stemExclusionsSet;
 	}
 
 	@SuppressWarnings("unused")
