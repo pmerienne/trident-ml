@@ -1,6 +1,6 @@
 package storm.trident.ml.preprocessing;
 
-import storm.trident.ml.Instance;
+import storm.trident.ml.core.Instance;
 import storm.trident.ml.util.MathUtil;
 import storm.trident.operation.BaseFunction;
 import storm.trident.operation.TridentCollector;

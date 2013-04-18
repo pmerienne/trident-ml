@@ -3,7 +3,7 @@ package storm.trident.ml.testing;
 import java.util.Map;
 import java.util.Random;
 
-import storm.trident.ml.Instance;
+import storm.trident.ml.core.Instance;
 import storm.trident.operation.TridentCollector;
 import storm.trident.spout.IBatchSpout;
 import backtype.storm.task.TopologyContext;

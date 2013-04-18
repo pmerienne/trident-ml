@@ -1,6 +1,6 @@
 package storm.trident.ml.preprocessing;
 
-import storm.trident.ml.Instance;
+import storm.trident.ml.core.Instance;
 import storm.trident.ml.stats.StreamFeatureStatistics;
 import storm.trident.ml.stats.StreamStatistics;
 import storm.trident.operation.BaseFunction;

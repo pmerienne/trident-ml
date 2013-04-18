@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import storm.trident.TridentState;
 import storm.trident.TridentTopology;
-import storm.trident.ml.Instance;
+import storm.trident.ml.core.Instance;
 import storm.trident.ml.testing.NANDSpout;
 import storm.trident.operation.BaseFunction;
 import storm.trident.operation.TridentCollector;

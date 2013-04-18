@@ -6,7 +6,7 @@ import java.util.List;
 
 import backtype.storm.tuple.Values;
 
-import storm.trident.ml.Instance;
+import storm.trident.ml.core.Instance;
 import storm.trident.ml.util.KeysUtil;
 import storm.trident.operation.TridentCollector;
 import storm.trident.state.BaseStateUpdater;

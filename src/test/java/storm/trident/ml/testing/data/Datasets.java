@@ -13,7 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import storm.trident.ml.Instance;
+import storm.trident.ml.core.Instance;
+import storm.trident.ml.core.TextInstance;
+import storm.trident.ml.preprocessing.TextTokenizer;
 
 public class Datasets {
 
@@ -25,8 +27,7 @@ public class Datasets {
 	public final static List<Instance<Boolean>> SPAM_SAMPLES = new ArrayList<Instance<Boolean>>();
 	public final static List<Instance<Integer>> USPS_SAMPLES = new ArrayList<Instance<Integer>>();
 	public final static List<Instance<Double>> BIRTHS_SAMPLES = new ArrayList<Instance<Double>>();
-	public final static Map<Integer, List<String>> REUTERS_TRAIN_DATA = new HashMap<Integer, List<String>>();
-	public final static Map<Integer, List<String>> REUTERS_EVAL_DATA = new HashMap<Integer, List<String>>();
+	public final static List<TextInstance<Integer>> REUTERS_SAMPLES = new ArrayList<TextInstance<Integer>>();
 
 	static {
 		try {
@@ -129,9 +130,8 @@ public class Datasets {
 	}
 
 	protected static void loadReutersData() throws IOException {
+		TextTokenizer tokenizer = new TextTokenizer();
 		Map<String, Integer> topics = new HashMap<String, Integer>();
-
-		Random random = new Random();
 
 		FileInputStream is = new FileInputStream(REUTEURS_FILE);
 		BufferedReader br = new BufferedReader(new InputStreamReader(is));
@@ -150,17 +150,13 @@ public class Datasets {
 					int startIndex = line.indexOf(" - ");
 					String text = line.substring(startIndex, line.length() - 1);
 
-					// Add to train or eval
-					Map<Integer, List<String>> data = random.nextDouble() < 0.80 ? REUTERS_TRAIN_DATA : REUTERS_EVAL_DATA;
-					if (!data.containsKey(classIndex)) {
-						data.put(classIndex, new ArrayList<String>());
-					}
-					data.get(classIndex).add(text);
+					REUTERS_SAMPLES.add(new TextInstance<Integer>(classIndex, tokenizer.tokenize(text)));
 				} catch (Exception ex) {
-					System.out.println("Skipped Reuters sample : " + line);
+					System.err.println("Skipped Reuters sample because it can't be parsed : " + line);
 				}
 			}
 
+			Collections.shuffle(REUTERS_SAMPLES);
 		} finally {
 			is.close();
 			br.close();

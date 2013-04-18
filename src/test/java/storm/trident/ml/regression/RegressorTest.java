@@ -2,7 +2,7 @@ package storm.trident.ml.regression;
 
 import java.util.List;
 
-import storm.trident.ml.Instance;
+import storm.trident.ml.core.Instance;
 import storm.trident.ml.testing.data.DatasetUtils;
 
 public class RegressorTest {

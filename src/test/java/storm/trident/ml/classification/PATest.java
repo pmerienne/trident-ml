@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import storm.trident.ml.Instance;
 import storm.trident.ml.classification.PAClassifier.Type;
+import storm.trident.ml.core.Instance;
 import storm.trident.ml.testing.data.Datasets;
 
 public class PATest extends ClassifierTest {

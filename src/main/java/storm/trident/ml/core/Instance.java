@@ -1,4 +1,4 @@
-package storm.trident.ml;
+package storm.trident.ml.core;
 
 import java.io.Serializable;
 import java.util.Arrays;

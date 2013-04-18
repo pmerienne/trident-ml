@@ -30,6 +30,10 @@ public class KLDClassifier implements TextClassifier, TextFeaturesExtractor {
 		this(nbClasses, 500000, 10.0, true);
 	}
 
+	public KLDClassifier(int nbClasses, int maxWordsPerClass) {
+		this(nbClasses, maxWordsPerClass, 10.0, true);
+	}
+
 	public KLDClassifier(int nbClasses, int maxWordsPerClass, double thresholdFactor, boolean normalize) {
 		this.maxWordsPerClass = maxWordsPerClass;
 		this.thresholdFactor = thresholdFactor;

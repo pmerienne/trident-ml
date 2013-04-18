@@ -3,12 +3,10 @@ package storm.trident.ml.testing.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import storm.trident.ml.Instance;
-
 public class DatasetUtils {
 
-	public static <L> List<Instance<L>> getEvalFold(int foldIndex, int foldNb, List<Instance<L>> samples) {
-		List<Instance<L>> eval = new ArrayList<Instance<L>>();
+	public static <E> List<E> getEvalFold(int foldIndex, int foldNb, List<E> samples) {
+		List<E> eval = new ArrayList<E>();
 
 		int start = foldIndex * (samples.size() / foldNb);
 		int end = (foldIndex + 1) * (samples.size() / foldNb);
@@ -22,8 +20,8 @@ public class DatasetUtils {
 		return eval;
 	}
 
-	public static <L> List<Instance<L>> getTrainingFolds(int foldIndex, int foldNb, List<Instance<L>> samples) {
-		List<Instance<L>> train = new ArrayList<Instance<L>>();
+	public static <E> List<E> getTrainingFolds(int foldIndex, int foldNb, List<E> samples) {
+		List<E> train = new ArrayList<E>();
 
 		int start = foldIndex * (samples.size() / foldNb);
 		int end = (foldIndex + 1) * (samples.size() / foldNb);

@@ -2,8 +2,8 @@ package storm.trident.ml.testing;
 
 import java.util.List;
 
-import storm.trident.ml.Instance;
 import storm.trident.ml.clustering.Clusterer;
+import storm.trident.ml.core.Instance;
 
 /**
  * Evaluates clusters using the Rand index : W. M. Rand (1971).

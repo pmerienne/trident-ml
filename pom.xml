@@ -15,6 +15,7 @@
 		<!-- Version dependencies -->
 		<storm.version>0.8.1</storm.version>
 		<jblas.version>1.2.3</jblas.version>
+		<lucene.version>3.6.2</lucene.version>
 
 		<junit.version>4.7</junit.version>
 		<mockito.version>1.9.0</mockito.version>
@@ -35,16 +36,18 @@
 			<version>${storm.version}</version>
 		</dependency>
 
+		<!-- Matrix manipulation -->
 		<dependency>
 			<groupId>org.jblas</groupId>
 			<artifactId>jblas</artifactId>
 			<version>${jblas.version}</version>
 		</dependency>
 
+		<!-- Text pre-processing -->
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-analyzers</artifactId>
-			<version>3.5.0</version>
+			<version>${lucene.version}</version>
 		</dependency>
 
 		<!-- Test -->

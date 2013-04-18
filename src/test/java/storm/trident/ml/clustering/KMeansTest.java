@@ -14,7 +14,7 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import storm.trident.ml.Instance;
+import storm.trident.ml.core.Instance;
 import storm.trident.ml.testing.RandEvaluator;
 
 public class KMeansTest {

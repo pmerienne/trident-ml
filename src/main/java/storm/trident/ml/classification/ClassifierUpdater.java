@@ -3,7 +3,7 @@ package storm.trident.ml.classification;
 import java.util.Arrays;
 import java.util.List;
 
-import storm.trident.ml.Instance;
+import storm.trident.ml.core.Instance;
 import storm.trident.ml.util.KeysUtil;
 import storm.trident.operation.TridentCollector;
 import storm.trident.state.BaseStateUpdater;
