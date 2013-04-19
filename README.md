@@ -1,21 +1,19 @@
-# Trident-ML – the Mahout of stream processing
-
 Trident-ML is a distributed realtime online machine learning. It allows you to build real time predictive features using scalable online algotihms.
 This library is built on top of [Storm](https://github.com/nathanmarz/storm), a distributed stream processing framework which runs on a cluster of machines and supports horizontal scaling.
 
 Trident-ML currently supports : 
 * Linear classification (Perceptron, Passive-Aggresive, Winnow, AROW)
 * Linear regression (Perceptron, Passive-Aggresive)
-* Stream statistics (mean, variance)
 * Feature scaling (standardization, normalization)
 * Text feature extraction
+* Stream statistics (mean, variance)
 
-## API Overview
+# API Overview
 
 Trident-ML is based on [Trident](https://github.com/nathanmarz/storm/wiki/Trident-tutorial), a high-level abstraction for doing realtime computing.
 If you're familiar with high level batch processing tools like Pig or Cascading, the concepts of Trident will be very familiar.
 
-### Create instances
+## Create instances
 
 Trident-ML process unbounded streams of data implemented by an infinite collection of [Instance](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/core/Instance.java) or [TextInstance](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/core/TextInstance.java).
 Creating instances is the first step to build a prediction tools.
@@ -46,6 +44,14 @@ toppology
   // Convert trident tupl to text instance
   .each(new Fields("label", "text"), new TextInstanceCreator<Integer>(), new Fields("instance"));
 ```
+
+## Build classifier
+
+## Build regressor
+
+## Stream statistics
+
+## Preprocessing data
 
 
 # Upcoming features
