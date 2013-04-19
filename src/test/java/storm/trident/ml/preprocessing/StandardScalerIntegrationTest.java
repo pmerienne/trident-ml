@@ -22,6 +22,7 @@ import backtype.storm.tuple.Fields;
 
 public class StandardScalerIntegrationTest {
 
+	@SuppressWarnings("rawtypes")
 	@Test
 	public void testInTopology() throws InterruptedException {
 		// Start local cluster
@@ -35,7 +36,10 @@ public class StandardScalerIntegrationTest {
 
 			TridentState scaledStreamStatistics = toppology
 			// emit tuples with random features
-					.newStream("originalStream", new RandomFeaturesSpout(2, 3.0))
+					.newStream("originalStream", new RandomFeaturesSpout(false, 2, 3.0))
+
+					// Transform trident tupl to instance
+					.each(new Fields("x0", "x1"), new InstanceCreator(false), new Fields("instance"))
 
 					// Update original stream statistics
 					.partitionPersist(new MemoryMapState.Factory(), new Fields("instance"), new StreamStatisticsUpdater("originalStreamStats", new StreamStatistics()),
