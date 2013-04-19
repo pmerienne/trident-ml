@@ -28,7 +28,7 @@ toppology
   // Emit tuples with 2 random features (named x0 and x1) and an associated boolean label (named label)
   .newStream("randomFeatures", new RandomFeaturesSpout())
   
-  // Transform trident tupl to instance
+  // Transform trident tuple to instance
   .each(new Fields("label", "x0", "x1"), new InstanceCreator<Boolean>(), new Fields("instance"));
 ```
 
@@ -41,7 +41,7 @@ toppology
   // emit tuples containing text and associated label (topic)
   .newStream("reuters", new ReutersBatchSpout())
 
-  // Convert trident tupl to text instance
+  // Convert trident tuple to text instance
   .each(new Fields("label", "text"), new TextInstanceCreator<Integer>(), new Fields("instance"));
 ```
 
@@ -52,7 +52,43 @@ toppology
 ## Stream statistics
 
 ## Preprocessing data
+Data preprocessing is an important step in the data mining process. 
+Trident-ML provides Trident functions to transform raw features into a representation that is more suitable for machine learning algorithms.
 
+* [Normalizer](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/preprocessing/Normalizer.java) scales individual instances to have unit norm. 
+
+```java
+TridentTopology toppology = new TridentTopology();
+
+toppology
+	 // Emit tuples with 2 random features (named x0 and x1) and an associated boolean label (named label)
+	.newStream("randomFeatures", new RandomFeaturesSpout())
+
+	// Convert trident tuple to instance
+  .each(new Fields("label", "x0", "x1"), new InstanceCreator<Boolean>(), new Fields("instance"))
+	  
+  // Scales features to unit norm
+  .each(new Fields("instance"), new Normalizer(), new Fields("scaledInstance"));
+```
+
+* [StandardScaler](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/preprocessing/StandardScaler.java) transform raw features to standard normally distributed data (Gaussian with zero mean and unit variance). It uses [Stream Statistics](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/stats/StreamStatistics.java) to remove mean and scale to variance.
+
+```java
+TridentTopology toppology = new TridentTopology();
+
+toppology
+  // Emit tuples with 2 random features (named x0 and x1) and an associated boolean label (named label)
+  .newStream("randomFeatures", new RandomFeaturesSpout())
+
+  // Convert trident tuple to instance
+  .each(new Fields("label", "x0", "x1"), new InstanceCreator<Boolean>(), new Fields("instance"))
+		  
+  // Update stream statistics
+  .partitionPersist(new MemoryMapState.Factory(), new Fields("instance"), new StreamStatisticsUpdater("streamStats", new StreamStatistics()), new Fields("instance", "streamStats")).newValuesStream()
+
+  // Standardized stream using original stream statistics
+  .each(new Fields("instance", "streamStats"), new StandardScaler(), new Fields("scaledInstance"));
+```
 
 # Upcoming features
 * Clustering (KMeans)
