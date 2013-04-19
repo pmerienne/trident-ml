@@ -28,11 +28,11 @@ For the purposes of illustration, this example will read an infinite stream of r
 TridentTopology toppology = new TridentTopology();
 
 toppology
-  // emit tuples with random features
+  // emit tuples with random features named x0, x1, x2, ..., x5
   .newStream("originalStream", new RandomFeaturesSpout())
   
   // Transform trident tupl to instance
-  .each(new Fields("features"), new InstanceCreator(), new Fields("instance"));
+  .each(new Fields("x0", "x1", "x2", "x3", "x4", "x5"), new InstanceCreator(), new Fields("instance"));
 ```
 
 
