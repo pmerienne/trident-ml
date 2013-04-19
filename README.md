@@ -1,4 +1,4 @@
-Trident-ML is a distributed realtime online machine learning. It allows you to build real time predictive features using scalable online algotihms.
+Trident-ML is a distributed realtime online machine learning library. It allows you to build real time predictive features using scalable online algotihms.
 This library is built on top of [Storm](https://github.com/nathanmarz/storm), a distributed stream processing framework which runs on a cluster of machines and supports horizontal scaling.
 
 Trident-ML currently supports : 
