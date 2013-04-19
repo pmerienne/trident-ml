@@ -38,7 +38,7 @@ toppology
 TridentTopology toppology = new TridentTopology();
 
 toppology
-  // emit tuples containing text and associated label (topic)
+  // Emit tuples containing text and associated label (topic)
   .newStream("reuters", new ReutersBatchSpout())
 
   // Convert trident tuple to text instance
@@ -50,6 +50,34 @@ toppology
 ## Build regressor
 
 ## Stream statistics
+Single stream statistics such as mean, standard deviation and count can be easily computed using Trident-ML.
+Theses statistics are stored in a [StreamStatistics](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/stats/StreamStatistics.java) object.
+Statistics update and query are performed respectively using a [StreamStatisticsUpdater](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/stats/StreamStatisticsUpdater.java) and a [StreamFeatureStatisticsQuery](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/stats/StreamFeatureStatisticsQuery.java).
+
+
+```java
+TridentTopology toppology = new TridentTopology();
+
+// Update stream statistics
+TridentState streamStatisticsState = toppology
+  // emit tuples with random features
+  .newStream("randomFeatures", new RandomFeaturesSpout())
+
+  // Transform trident tuple to instance
+  .each(new Fields("x0", "x1"), new InstanceCreator(), new Fields("instance"))
+
+  // Update stream statistics
+  .partitionPersist(new MemoryMapState.Factory(), new Fields("instance"), new StreamStatisticsUpdater("randomFeaturesStream", StreamStatistics.fixed()));
+
+// Query stream statistics (with DRPC)
+toppology.newDRPCStream("queryStats", localDRPC)
+  // Query stream statistics
+  .stateQuery(streamStatisticsState, new StreamStatisticsQuery("randomFeaturesStream"), new Fields("streamStats"));
+
+```
+Note that Trident-ML can suppport concept drift in a sliding window manner.
+Use StreamStatistics#adaptive(maxSize) to construct StreamStatistics implementation with a maxSize length window.
+
 
 ## Preprocessing data
 Data preprocessing is an important step in the data mining process. 
@@ -61,10 +89,10 @@ Trident-ML provides Trident functions to transform raw features into a represent
 TridentTopology toppology = new TridentTopology();
 
 toppology
-	 // Emit tuples with 2 random features (named x0 and x1) and an associated boolean label (named label)
-	.newStream("randomFeatures", new RandomFeaturesSpout())
+  // Emit tuples with 2 random features (named x0 and x1) and an associated boolean label (named label)
+  .newStream("randomFeatures", new RandomFeaturesSpout())
 
-	// Convert trident tuple to instance
+  // Convert trident tuple to instance
   .each(new Fields("label", "x0", "x1"), new InstanceCreator<Boolean>(), new Fields("instance"))
 	  
   // Scales features to unit norm
