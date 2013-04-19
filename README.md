@@ -50,9 +50,9 @@ toppology
 ## Build regressor
 
 ## Stream statistics
-Single stream statistics such as mean, standard deviation and count can be easily computed using Trident-ML.
+Stream statistics such as mean, standard deviation and count can be easily computed using Trident-ML.
 Theses statistics are stored in a [StreamStatistics](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/stats/StreamStatistics.java) object.
-Statistics update and query are performed respectively using a [StreamStatisticsUpdater](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/stats/StreamStatisticsUpdater.java) and a [StreamFeatureStatisticsQuery](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/stats/StreamFeatureStatisticsQuery.java).
+Statistics update and query are performed respectively using a [StreamStatisticsUpdater](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/stats/StreamStatisticsUpdater.java) and a [StreamStatisticsQuery](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/stats/StreamStatisticsQuery.java).
 
 
 ```java
@@ -76,7 +76,7 @@ toppology.newDRPCStream("queryStats", localDRPC)
 
 ```
 Note that Trident-ML can suppport concept drift in a sliding window manner.
-Use StreamStatistics#adaptive(maxSize) to construct StreamStatistics implementation with a maxSize length window.
+Use StreamStatistics#adaptive(maxSize) instead of StreamStatistics#fixed() to construct StreamStatistics implementation with a maxSize length window.
 
 
 ## Preprocessing data
