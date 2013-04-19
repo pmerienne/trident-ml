@@ -12,27 +12,39 @@ Trident-ML currently supports :
 
 ## API Overview
 
-Trident-ML is based on a high-level abstraction for doing realtime computing :  [Trident](https://github.com/nathanmarz/storm/wiki/Trident-tutorial).
+Trident-ML is based on [Trident](https://github.com/nathanmarz/storm/wiki/Trident-tutorial), a high-level abstraction for doing realtime computing.
 If you're familiar with high level batch processing tools like Pig or Cascading, the concepts of Trident will be very familiar.
 
 ### Create instances
 
 Trident-ML process unbounded streams of data implemented by an infinite collection of [Instance](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/core/Instance.java) or [TextInstance](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/core/TextInstance.java).
 Creating instances is the first step to build a prediction tools.
-Trident-ML offers 2 [Trident functions](https://github.com/nathanmarz/storm/wiki/Trident-API-Overview#functions) to convert Trident tuples to instances :
-* [InstanceCreator](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/preprocessing/InstanceCreator.java)
-* [TextInstanceCreator](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/preprocessing/TextInstanceCreator.java)
+Trident-ML offers [Trident functions](https://github.com/nathanmarz/storm/wiki/Trident-API-Overview#functions) to convert Trident tuples to instances :
 
-For the purposes of illustration, this example will read an infinite stream of random features and convert them to instances :
+* Use [InstanceCreator](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/preprocessing/InstanceCreator.java) to create [Instance](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/core/Instance.java)
+
 ```java
 TridentTopology toppology = new TridentTopology();
 
 toppology
-  // emit tuples with random features named x0, x1, x2, ..., x5
-  .newStream("originalStream", new RandomFeaturesSpout())
+  // Emit tuples with 2 random features (named x0 and x1) and an associated boolean label (named label)
+  .newStream("randomFeatures", new RandomFeaturesSpout())
   
   // Transform trident tupl to instance
-  .each(new Fields("x0", "x1", "x2", "x3", "x4", "x5"), new InstanceCreator(), new Fields("instance"));
+  .each(new Fields("label", "x0", "x1"), new InstanceCreator<Boolean>(), new Fields("instance"));
+```
+
+* Use [TextInstanceCreator](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/preprocessing/TextInstanceCreator.java) to create [TextInstance](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/core/TextInstance.java)
+
+```java
+TridentTopology toppology = new TridentTopology();
+
+toppology
+  // emit tuples containing text and associated label (topic)
+  .newStream("reuters", new ReutersBatchSpout())
+
+  // Convert trident tupl to text instance
+  .each(new Fields("label", "text"), new TextInstanceCreator<Integer>(), new Fields("instance"));
 ```
 
 
