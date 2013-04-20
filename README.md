@@ -45,15 +45,87 @@ toppology
   .each(new Fields("label", "text"), new TextInstanceCreator<Integer>(), new Fields("instance"));
 ```
 
-## Build classifier
+## Supervised classification
+Trident-ML includes differents algorithms to do supervised classification : 
+* [PerceptronClassifier](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/classification/PerceptronClassifier.java)
+implements a binary classifier based on an averaged kernel-based perceptron.
+* [WinnowClassifier](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/classification/WinnowClassifier.java)
+implements [Winnow algorithm](http://link.springer.com/content/pdf/10.1007%2FBF00116827.pdf).
+It scales well to high-dimensional data and performs better than a perceptron when many dimensions are irrelevant. 
+* [BWinnowClassifier](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/classification/BWinnowClassifier.java)
+ is an implementation of the [Balanced Winnow algorithm](http://link.springer.com/content/pdf/10.1007%2FBF00116827.pdf) 
+an extension of the original Winnow algorithm.
+* [AROWClassifier](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/classification/AROWClassifier.java)
+is an simple and efficient implementation of [Adaptive Regularization of Weights](http://books.nips.cc/papers/files/nips22/NIPS2009_0611.pdf).
+It combines several useful properties : large margin training, confidence weighting, and the capacity to handle non-separable data.
+* [PAClassifier](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/classification/PAClassifier.java)
+implements the [Passive-Aggresive binary classifier](http://eprints.pascal-network.org/archive/00002147/01/CrammerDeKeShSi06.pdf)
+a margin based learning algorithm.
+* [MultiClassPAClassifier](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/classification/MultiClassPAClassifier.java)
+a variant of the Passive-Aggresive performing one-vs-all multiclass classification.
+
+Theses classifiers learn from a datastream of labeled [Instance](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/core/Instance.java)
+using a [ClassifierUpdater](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/classification/ClassifierUpdater.java).
+Another datastream of unlabeled instance can be classified with a [ClassifyQuery](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/classification/ClassifyQuery.java).
+
+The following example learn a NAND function and classify instances comming from a DRPC stream.
+
+```java
+TridentTopology toppology = new TridentTopology();
+
+// Create perceptron state from labeled instances stream
+TridentState perceptronModel = toppology
+  // Emit tuple with a labeled instance of enhanced NAND features
+  // i.e. : {label=true, features=[1.0 0.0 1.0]} or {label=false, features=[1.0 1.0 1.0]}  
+  .newStream("nandsamples", new NANDSpout())
+				
+  // Update perceptron
+  .partitionPersist(new MemoryMapState.Factory(), new Fields("instance"), new ClassifierUpdater<Boolean>("perceptron", new PerceptronClassifier()));
+
+// Classify instance from a DRPC stream
+toppology.newDRPCStream("predict", localDRPC)
+  // Transform DRPC ARGS to unlabeled instance
+  .each(new Fields("args"), new DRPCArgsToInstance(), new Fields("instance"))
+
+  // Classify instance using perceptron state
+  .stateQuery(perceptronModel, new Fields("instance"), new ClassifyQuery<Boolean>("perceptron"), new Fields("prediction"));
+```				
+
+Trident-ML provides the [KLDClassifier](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/nlp/KLDClassifier.java)
+which implements a [text classifier using the Kullback-Leibler Distance](http://lvk.cs.msu.su/~bruzz/articles/classification/Using%20Kullback-Leibler%20Distance%20for%20Text%20Categorization.pdf).
+
+Here's the code to build a news classifier using Reuters dataset :
+
+```java
+TridentTopology toppology = new TridentTopology();
+
+// Create KLD classifier state from labeled instances stream
+TridentState classifierState = toppology
+  // Emit tuples containing text and associated label (topic)
+  .newStream("reuters", new ReutersBatchSpout())
+
+  // Convert trident tuple to text instance
+  .each(new Fields("label", "text"), new TextInstanceCreator<Integer>(), new Fields("instance"))
+  
+  // Update classifier
+  .partitionPersist(new MemoryMapState.Factory(), new Fields("instance"), new TextClassifierUpdater("newsClassifier", new KLDClassifier(9)));
+
+// Classification stream
+toppology.newDRPCStream("classify", localDRPC)
+
+  // Convert DRPC args to text instance
+  .each(new Fields("args"), new TextInstanceCreator<Integer>(false), new Fields("instance"))
+
+  // Query classifier with text instance
+  .stateQuery(classifierState, new Fields("instance"), new ClassifyTextQuery("newsClassifier"), new Fields("prediction"));
+```
 
 ## Build regressor
 
 ## Stream statistics
 Stream statistics such as mean, standard deviation and count can be easily computed using Trident-ML.
 Theses statistics are stored in a [StreamStatistics](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/stats/StreamStatistics.java) object.
-Statistics update and query are performed respectively using a [StreamStatisticsUpdater](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/stats/StreamStatisticsUpdater.java) and a [StreamStatisticsQuery](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/stats/StreamStatisticsQuery.java).
-
+Statistics update and query are performed respectively using a [StreamStatisticsUpdater](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/stats/StreamStatisticsUpdater.java) and a [StreamStatisticsQuery](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/stats/StreamStatisticsQuery.java) :
 
 ```java
 TridentTopology toppology = new TridentTopology();
@@ -114,7 +186,7 @@ toppology
   // Update stream statistics
   .partitionPersist(new MemoryMapState.Factory(), new Fields("instance"), new StreamStatisticsUpdater("streamStats", new StreamStatistics()), new Fields("instance", "streamStats")).newValuesStream()
 
-  // Standardized stream using original stream statistics
+  // Standardize stream using original stream statistics
   .each(new Fields("instance", "streamStats"), new StandardScaler(), new Fields("scaledInstance"));
 ```
 
