@@ -120,6 +120,38 @@ toppology.newDRPCStream("classify", localDRPC)
   .stateQuery(classifierState, new Fields("instance"), new ClassifyTextQuery("newsClassifier"), new Fields("prediction"));
 ```
 
+## Clustering
+[KMeans](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/clustering/KMeans.java)
+is an implementation of the well known [k-means algorithm](http://en.wikipedia.org/wiki/K-means_clustering)
+which partitions instances into clusters.
+
+Use a [ClusterUpdater](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/clustering/ClusterUpdater.java)
+or a [ClusterQuery](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/clustering/ClusterQuery.java)
+to respectively udpate clusters or query the clusterer :
+
+```java
+TridentTopology toppology = new TridentTopology();
+
+// Training stream
+TridentState kmeansState = toppology
+  // Emit tuples with a instance containing an integer as label and 3 double features named (x0, x1 and x2)
+  .newStream("samples", new RandomFeaturesForClusteringSpout())
+
+  // Convert trident tuple to instance
+  .each(new Fields("label", "x0", "x1", "x2"), new InstanceCreator<Integer>(), new Fields("instance"))
+
+  // Update a 3 classes kmeans
+  .partitionPersist(new MemoryMapState.Factory(), new Fields("instance"), new ClusterUpdater("kmeans", new KMeans(3)));
+
+// Cluster stream
+toppology.newDRPCStream("predict", localDRPC)
+  // Convert DRPC args to instance
+  .each(new Fields("args"), new DRPCArgsToInstance(), new Fields("instance"))
+
+  // Query kmeans to classify instance
+  .stateQuery(kmeansState, new Fields("instance"), new ClusterQuery("kmeans"), new Fields("prediction"));
+```
+
 ## Build regressor
 
 ## Stream statistics
