@@ -32,7 +32,7 @@ public class ClustererTridentIntegrationTest {
 			TridentTopology toppology = new TridentTopology();
 
 			// Training stream
-			TridentState perceptronModel = toppology
+			TridentState kmeansState = toppology
 				// Emit tuples with a instance containing an integer as label and 3
 				// double features named (x0, x1 and x2)
 				.newStream("samples", new RandomFeaturesForClusteringSpout())
@@ -49,7 +49,7 @@ public class ClustererTridentIntegrationTest {
 				.each(new Fields("args"), new DRPCArgsToInstance(), new Fields("instance"))
 
 				// Query kmeans to classify instance
-				.stateQuery(perceptronModel, new Fields("instance"), new ClusterQuery("kmeans"), new Fields("prediction"))
+				.stateQuery(kmeansState, new Fields("instance"), new ClusterQuery("kmeans"), new Fields("prediction"))
 					
 				.project(new Fields("prediction"));
 
