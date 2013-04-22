@@ -1,5 +1,6 @@
 package storm.trident.ml.clustering;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +14,9 @@ import storm.trident.ml.util.MathUtil;
  * @author pmerienne
  * 
  */
-public class KMeans implements Clusterer {
+public class KMeans implements Clusterer, Serializable {
+
+	private static final long serialVersionUID = 338231277453149972L;
 
 	private List<Long> counts = null;
 	private double[][] centroids;
@@ -126,5 +129,12 @@ public class KMeans implements Clusterer {
 		boolean countsReady = this.counts != null;
 		boolean centroidsReady = this.centroids != null;
 		return countsReady && centroidsReady;
+	}
+
+	@Override
+	public void reset() {
+		this.counts = null;
+		this.centroids = null;
+		this.initFeatures = new ArrayList<double[]>();
 	}
 }

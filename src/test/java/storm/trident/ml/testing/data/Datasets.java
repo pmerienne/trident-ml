@@ -23,11 +23,13 @@ public class Datasets {
 	private final static File SPAM_FILE = new File("src/test/resources/spam.csv");
 	private final static File BIRTHS_FILE = new File("src/test/resources/births.csv");
 	private final static File REUTEURS_FILE = new File("src/test/resources/reuters.csv");
+	private final static File CLUSTERING_FILE = new File("src/test/resources/clustering-data.csv");
 
 	public final static List<Instance<Boolean>> SPAM_SAMPLES = new ArrayList<Instance<Boolean>>();
 	public final static List<Instance<Integer>> USPS_SAMPLES = new ArrayList<Instance<Integer>>();
 	public final static List<Instance<Double>> BIRTHS_SAMPLES = new ArrayList<Instance<Double>>();
 	public final static List<TextInstance<Integer>> REUTERS_SAMPLES = new ArrayList<TextInstance<Integer>>();
+	public final static List<Instance<Integer>> CUSTERING_SAMPLES = new ArrayList<Instance<Integer>>();
 
 	static {
 		try {
@@ -35,6 +37,7 @@ public class Datasets {
 			loadSPAMData();
 			loadBirthsData();
 			loadReutersData();
+			loadClusteringData();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -163,6 +166,50 @@ public class Datasets {
 		}
 	}
 
+	protected static void loadClusteringData() throws IOException {
+		FileInputStream is = new FileInputStream(CLUSTERING_FILE);
+		BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+		try {
+			String line;
+			while ((line = br.readLine()) != null) {
+				try {
+					String[] values = line.split(",");
+
+					Integer label = Integer.parseInt(values[10]);
+
+					double[] features = new double[8];
+					for (int i = 1; i < 9; i++) {
+						features[i - 1] = Double.parseDouble(values[i]);
+					}
+
+					CUSTERING_SAMPLES.add(new Instance<Integer>(label, features));
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+
+				Collections.shuffle(CUSTERING_SAMPLES);
+			}
+		} finally {
+			is.close();
+			br.close();
+		}
+	}
+
+	public static  List<Instance<Integer>> generateDataForClusterization(int nbCluster, int nbInstances) {
+		Random random = new Random();
+
+		List<Instance<Integer>> samples = new ArrayList<Instance<Integer>>();
+		for (int i = 0; i < nbInstances; i++) {
+			Integer label = random.nextInt(nbCluster);
+			double[] features = new double[] { label + random.nextDouble() * 1.25, -label + random.nextDouble() * 1.25, random.nextDouble() };
+			Instance<Integer> sample = new Instance<Integer>(label, features);
+			samples.add(sample);
+		}
+
+		return samples;
+	}
+
 	public static List<Instance<Boolean>> generatedNandInstances(int nb) {
 		Random random = new Random();
 
@@ -189,6 +236,22 @@ public class Datasets {
 			}
 			features[featureSize] = 1.0;
 			samples.add(new Instance<Boolean>(label > 0, features));
+		}
+
+		return samples;
+	}
+
+	public static List<Instance<Boolean>> generateNonSeparatableDataForClassification(int size) {
+		Random random = new Random();
+		List<Instance<Boolean>> samples = new ArrayList<Instance<Boolean>>();
+
+		for (int i = 0; i < size; i++) {
+			Boolean label = random.nextDouble() > 0.5;
+			double[] features = new double[3];
+			features[0] = 1.0;
+			features[1] = (label ? -1.0 : 1.0) * random.nextDouble() + random.nextGaussian() / 2;
+			features[2] = (label ? -1.0 : 1.0) * random.nextDouble() + random.nextGaussian() / 2;
+			samples.add(new Instance<Boolean>(label, features));
 		}
 
 		return samples;
