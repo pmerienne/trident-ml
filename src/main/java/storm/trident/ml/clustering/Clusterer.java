@@ -34,4 +34,6 @@ public interface Clusterer {
 	 * @return
 	 */
 	double[][] getCentroids();
+	
+	void reset();
 }

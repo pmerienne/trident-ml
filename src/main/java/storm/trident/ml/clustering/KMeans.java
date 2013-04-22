@@ -108,11 +108,12 @@ public class KMeans implements Clusterer, Serializable {
 		}
 
 		// TODO k-means++
-		if (this.initFeatures.size() >= this.nbCluster) {
+		if (this.initFeatures.size() >= 10 * this.nbCluster) {
 			this.centroids = new double[this.nbCluster][features.length];
 			for (int i = 0; i < this.nbCluster; i++) {
 				this.centroids[i] = this.initFeatures.get(i);
 			}
+			this.initFeatures.clear();
 		}
 	}
 
