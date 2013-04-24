@@ -3,6 +3,7 @@ package storm.trident.ml.clustering;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import storm.trident.ml.util.MathUtil;
 
@@ -30,30 +31,19 @@ public class KMeans implements Clusterer, Serializable {
 
 	@Override
 	public Integer classify(double[] features) {
-		if (!this.initCentroidIfPossible(features)) {
-			throw new IllegalStateException("KMeans is not ready");
+		if (!this.isReady()) {
+			throw new IllegalStateException("KMeans is not ready yet");
 		}
 
 		// Find nearest centroid
-		Integer nearestCentroidIndex = 0;
-		Double minDistance = Double.MAX_VALUE;
-		double[] currentCentroid;
-		Double currentDistance;
-		for (int i = 0; i < this.nbCluster; i++) {
-			currentCentroid = this.centroids[i];
-			currentDistance = MathUtil.euclideanDistance(currentCentroid, features);
-			if (currentDistance < minDistance) {
-				minDistance = currentDistance;
-				nearestCentroidIndex = i;
-			}
-		}
-
+		Integer nearestCentroidIndex = this.nearestCentroid(features);
 		return nearestCentroidIndex;
 	}
 
 	@Override
 	public Integer update(double[] features) {
-		if (!this.initCentroidIfPossible(features)) {
+		if (!this.isReady()) {
+			this.initIfPossible(features);
 			return null;
 		} else {
 			Integer nearestCentroid = this.classify(features);
@@ -71,8 +61,8 @@ public class KMeans implements Clusterer, Serializable {
 
 	@Override
 	public double[] distribution(double[] features) {
-		if (!this.initCentroidIfPossible(features)) {
-			throw new IllegalStateException("KMeans is not ready");
+		if (!this.isReady()) {
+			throw new IllegalStateException("KMeans is not ready yet");
 		}
 
 		double[] distribution = new double[this.nbCluster];
@@ -90,46 +80,105 @@ public class KMeans implements Clusterer, Serializable {
 		return this.centroids;
 	}
 
-	/**
-	 * Currently : random initialization
-	 * 
-	 * TODO : Init clusters using the k-means++ algorithm. (Arthur, D. and
-	 * Vassilvitskii, S. (2007). "k-means++: the advantages of careful seeding".
-	 * 
-	 * 
-	 */
-	protected void initCentroids(double[] features) {
-		this.initFeatures.add(features);
+	protected Integer nearestCentroid(double[] features) {
+		// Find nearest centroid
+		Integer nearestCentroidIndex = 0;
 
-		// Init counts
-		this.counts = new ArrayList<Long>(this.nbCluster);
-		for (int i = 0; i < this.nbCluster; i++) {
-			this.counts.add(0L);
-		}
-
-		// TODO k-means++
-		if (this.initFeatures.size() >= 10 * this.nbCluster) {
-			this.centroids = new double[this.nbCluster][features.length];
-			for (int i = 0; i < this.nbCluster; i++) {
-				this.centroids[i] = this.initFeatures.get(i);
+		Double minDistance = Double.MAX_VALUE;
+		double[] currentCentroid;
+		Double currentDistance;
+		for (int i = 0; i < this.centroids.length; i++) {
+			currentCentroid = this.centroids[i];
+			if (currentCentroid != null) {
+				currentDistance = MathUtil.euclideanDistance(currentCentroid, features);
+				if (currentDistance < minDistance) {
+					minDistance = currentDistance;
+					nearestCentroidIndex = i;
+				}
 			}
-			this.initFeatures.clear();
-		}
-	}
-
-	protected boolean initCentroidIfPossible(double[] features) {
-		if (this.isReady()) {
-			return true;
 		}
 
-		this.initCentroids(features);
-		return this.isReady();
+		return nearestCentroidIndex;
 	}
 
 	protected boolean isReady() {
 		boolean countsReady = this.counts != null;
 		boolean centroidsReady = this.centroids != null;
 		return countsReady && centroidsReady;
+	}
+
+	protected void initIfPossible(double[] features) {
+		this.initFeatures.add(features);
+
+		// magic number : 10 ??!
+		if (this.initFeatures.size() >= 10 * this.nbCluster) {
+			this.initCentroids();
+		}
+	}
+
+	/**
+	 * Init clusters using the k-means++ algorithm. (Arthur, D. and
+	 * Vassilvitskii, S. (2007). "k-means++: the advantages of careful seeding".
+	 * 
+	 */
+	protected void initCentroids() {
+		// Init counts
+		this.counts = new ArrayList<Long>(this.nbCluster);
+		for (int i = 0; i < this.nbCluster; i++) {
+			this.counts.add(0L);
+		}
+
+		this.centroids = new double[this.nbCluster][];
+
+		Random random = new Random();
+
+		// Choose one centroid uniformly at random from among the data points.
+		final double[] firstCentroid = this.initFeatures.remove(random.nextInt(this.initFeatures.size()));
+		this.centroids[0] = firstCentroid;
+
+		double[] dxs;
+
+		for (int j = 1; j < this.nbCluster; j++) {
+			// For each data point x, compute D(x)
+			dxs = this.computeDxs();
+
+			// Add one new data point as a center.
+			double[] features;
+			double r = random.nextDouble() * dxs[dxs.length - 1];
+			for (int i = 0; i < dxs.length; i++) {
+				if (dxs[i] >= r) {
+					features = this.initFeatures.remove(i);
+					this.centroids[j] = features;
+					break;
+				}
+			}
+		}
+
+		this.initFeatures.clear();
+	}
+
+	/**
+	 * For each features in {@link KMeans#initFeatures}, compute D(x), the
+	 * distance between x and the nearest center that has already been chosen.
+	 * 
+	 * @return
+	 */
+	protected double[] computeDxs() {
+		double[] dxs = new double[this.initFeatures.size()];
+
+		int sum = 0;
+		double[] features;
+		int nearestCentroidIndex;
+		double[] nearestCentroid;
+		for (int i = 0; i < this.initFeatures.size(); i++) {
+			features = this.initFeatures.get(i);
+			nearestCentroidIndex = this.nearestCentroid(features);
+			nearestCentroid = this.centroids[nearestCentroidIndex];
+			sum += Math.pow(MathUtil.euclideanDistance(features, nearestCentroid), 2);
+			dxs[i] = sum;
+		}
+
+		return dxs;
 	}
 
 	@Override

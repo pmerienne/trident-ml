@@ -176,10 +176,10 @@ public class Datasets {
 				try {
 					String[] values = line.split(",");
 
-					Integer label = Integer.parseInt(values[10]);
+					Integer label = Integer.parseInt(values[0]);
 
-					double[] features = new double[8];
-					for (int i = 1; i < 9; i++) {
+					double[] features = new double[values.length - 1];
+					for (int i = 1; i < values.length; i++) {
 						features[i - 1] = Double.parseDouble(values[i]);
 					}
 
@@ -196,7 +196,7 @@ public class Datasets {
 		}
 	}
 
-	public static  List<Instance<Integer>> generateDataForClusterization(int nbCluster, int nbInstances) {
+	public static List<Instance<Integer>> generateDataForClusterization(int nbCluster, int nbInstances) {
 		Random random = new Random();
 
 		List<Instance<Integer>> samples = new ArrayList<Instance<Integer>>();
