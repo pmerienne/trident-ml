@@ -122,7 +122,7 @@ toppology.newDRPCStream("classify", localDRPC)
   .stateQuery(classifierState, new Fields("instance"), new ClassifyTextQuery("newsClassifier"), new Fields("prediction"));
 ```
 
-## Clustering
+## Unsupervised classification
 [KMeans](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/clustering/KMeans.java)
 is an implementation of the well known [k-means algorithm](http://en.wikipedia.org/wiki/K-means_clustering)
 which partitions instances into clusters.
@@ -153,8 +153,6 @@ toppology.newDRPCStream("predict", localDRPC)
   // Query kmeans to classify instance
   .stateQuery(kmeansState, new Fields("instance"), new ClusterQuery("kmeans"), new Fields("prediction"));
 ```
-
-## Build regressor
 
 ## Stream statistics
 Stream statistics such as mean, standard deviation and count can be easily computed using Trident-ML.
