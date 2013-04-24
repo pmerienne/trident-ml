@@ -1,9 +1,11 @@
-Trident-ML is a distributed realtime online machine learning library. It allows you to build real time predictive features using scalable online algorihms.
+Trident-ML is a realtime online machine learning library. It allows you to build real time predictive features using scalable online algorihms.
 This library is built on top of [Storm](https://github.com/nathanmarz/storm), a distributed stream processing framework which runs on a cluster of machines and supports horizontal scaling.
+The packaged algorithms are designed to fit into limited memory and processing time but they don't work in a distributed way.
 
 Trident-ML currently supports : 
 * Linear classification (Perceptron, Passive-Aggresive, Winnow, AROW)
 * Linear regression (Perceptron, Passive-Aggresive)
+* Clustering (KMeans)
 * Feature scaling (standardization, normalization)
 * Text feature extraction
 * Stream statistics (mean, variance)
@@ -223,8 +225,6 @@ toppology
 ```
 
 # Upcoming features
-* Clustering (KMeans)
 * Noise adaptive filter (LMS, Wiener, Kalman, ...)
-* Nonlinear classification (Online Kernel trick, Online SVM, Online Decision Tree, ...)
-* Image features extraction
+* Distributed algorithms
 * Change detection
