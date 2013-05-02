@@ -66,11 +66,7 @@ public class AROWClassifier implements Classifier<Boolean> {
 				this.weights = weightsVector.add(delta).toArray();
 
 				// Matrix library needed!
-				DoubleMatrix sumX = featuresVector.mmul(varianceMatrix);
-				DoubleMatrix sumXX = sumX.transpose().mmul(featuresVector);
-				DoubleMatrix betaSumXX = sumXX.mul(beta);
-				DoubleMatrix betaSumXXSum = betaSumXX.mmul(varianceMatrix);
-				this.variance = varianceMatrix.sub(betaSumXXSum).toArray2();
+				this.variance = varianceMatrix.sub(featuresVector.mmul(varianceMatrix).transpose().mmul(featuresVector).mul(beta).mmul(varianceMatrix)).toArray2();
 			}
 		}
 	}
