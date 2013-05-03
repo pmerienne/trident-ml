@@ -58,6 +58,23 @@
 		</plugins>
 	</build>
 
+	<distributionManagement>
+		<repository>
+			<id>release-repo</id>
+			<url>https://pmerienne@github.com/pmerienne/trident-ml/raw/master/releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshot-repo</id>
+			<url>https://pmerienne@github.com/pmerienne/trident-ml/raw/master/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<scm>
+		<connection>scm:git:git@github.com:pmerienne/trident-ml.git</connection>
+		<developerConnection>scm:git:git@github.com:pmerienne/trident-ml.git</developerConnection>
+		<url>scm:git:git@github.com:pmerienne/trident-ml.git</url>
+	</scm>
+
 	<dependencies>
 		<dependency>
 			<groupId>storm</groupId>
