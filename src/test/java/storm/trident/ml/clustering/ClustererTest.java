@@ -5,7 +5,7 @@ import java.util.List;
 import storm.trident.ml.core.Instance;
 import storm.trident.ml.testing.data.DatasetUtils;
 
-public class ClustererTest {
+public abstract class ClustererTest {
 
 	private final static Integer FOLD_NB = 10;
 

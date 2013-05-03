@@ -5,7 +5,7 @@ import java.util.List;
 import storm.trident.ml.core.Instance;
 import storm.trident.ml.testing.data.DatasetUtils;
 
-public class ClassifierTest {
+public abstract class ClassifierTest {
 
 	private final static Integer FOLD_NB = 10;
 
