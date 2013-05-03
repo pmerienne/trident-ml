@@ -7,12 +7,12 @@ import java.util.List;
 
 import org.junit.Test;
 
-public class TextTokenizerTest {
+public class EnglishTokenizerTest {
 
 	@Test
 	public void testTokenize() {
 		// Given
-		TextTokenizer tokenizer = new TextTokenizer();
+		EnglishTokenizer tokenizer = new EnglishTokenizer();
 		String text = "I can't argue with some arguments on argus with argues";
 
 		// When

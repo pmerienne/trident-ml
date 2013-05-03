@@ -26,7 +26,7 @@ public class AROWTest extends ClassifierTest {
 
 	@Test
 	public void testWithSPAMData() {
-		double error = this.eval(new AROWClassifier(), Datasets.SPAM_SAMPLES);
+		double error = this.eval(new AROWClassifier(), Datasets.getSpamSamples());
 		assertTrue("Error " + error + " is to big!", error <= 0.1);
 	}
 

@@ -15,7 +15,8 @@ import java.util.Random;
 
 import storm.trident.ml.core.Instance;
 import storm.trident.ml.core.TextInstance;
-import storm.trident.ml.preprocessing.TextTokenizer;
+import storm.trident.ml.preprocessing.EnglishTokenizer;
+import storm.trident.ml.preprocessing.TwitterTokenizer;
 
 public class Datasets {
 
@@ -24,26 +25,110 @@ public class Datasets {
 	private final static File BIRTHS_FILE = new File("src/test/resources/births.csv");
 	private final static File REUTEURS_FILE = new File("src/test/resources/reuters.csv");
 	private final static File CLUSTERING_FILE = new File("src/test/resources/clustering-data.csv");
+	private final static File TWITTER_FILE = new File("src/test/resources/twitter-sentiment.csv");
+	private final static File TWITTER_FILE2 = new File("src/test/resources/twitter-sentiment2.csv");
+	private final static File REVIEW_FILE = new File("src/test/resources/review-sentiment.csv");
 
-	public final static List<Instance<Boolean>> SPAM_SAMPLES = new ArrayList<Instance<Boolean>>();
-	public final static List<Instance<Integer>> USPS_SAMPLES = new ArrayList<Instance<Integer>>();
-	public final static List<Instance<Double>> BIRTHS_SAMPLES = new ArrayList<Instance<Double>>();
-	public final static List<TextInstance<Integer>> REUTERS_SAMPLES = new ArrayList<TextInstance<Integer>>();
-	public final static List<Instance<Integer>> CUSTERING_SAMPLES = new ArrayList<Instance<Integer>>();
+	private static List<Instance<Boolean>> SPAM_SAMPLES;
+	private static List<Instance<Integer>> USPS_SAMPLES;
+	private static List<Instance<Double>> BIRTHS_SAMPLES;
+	private static List<TextInstance<Integer>> REUTERS_SAMPLES;
+	private static List<TextInstance<Integer>> TWITTER_SAMPLES;
+	private static List<TextInstance<Integer>> TWITTER_SAMPLES2;
+	private static List<TextInstance<Integer>> REVIEW_SAMPLES;
+	private static List<Instance<Integer>> CUSTERING_SAMPLES;
 
-	static {
-		try {
-			loadUSPSData();
-			loadSPAMData();
-			loadBirthsData();
-			loadReutersData();
-			loadClusteringData();
-		} catch (IOException e) {
-			e.printStackTrace();
+	public static List<TextInstance<Integer>> getReviewSamples() {
+		if (REVIEW_SAMPLES == null) {
+			try {
+				loadReviewData();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
+		return REVIEW_SAMPLES;
+	}
+	
+	public static List<Instance<Boolean>> getSpamSamples() {
+		if (SPAM_SAMPLES == null) {
+			try {
+				loadSPAMData();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return SPAM_SAMPLES;
+	}
+
+	public static List<Instance<Integer>> getUSPSSamples() {
+		if (USPS_SAMPLES == null) {
+			try {
+				loadUSPSData();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return USPS_SAMPLES;
+	}
+
+	public static List<Instance<Double>> getBIRTHSSamples() {
+		if (BIRTHS_SAMPLES == null) {
+			try {
+				loadBirthsData();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return BIRTHS_SAMPLES;
+	}
+
+	public static List<TextInstance<Integer>> getReutersSamples() {
+		if (REUTERS_SAMPLES == null) {
+			try {
+				loadReutersData();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return REUTERS_SAMPLES;
+	}
+
+	public static List<TextInstance<Integer>> getTwitterSamples() {
+		if (TWITTER_SAMPLES == null) {
+			try {
+				loadTwitterData();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return TWITTER_SAMPLES;
+	}
+
+	public static List<TextInstance<Integer>> getTwitter2Samples() {
+		if (TWITTER_SAMPLES2 == null) {
+			try {
+				loadTwitter2Data();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return TWITTER_SAMPLES2;
+	}
+
+	public static List<Instance<Integer>> getClusteringSamples() {
+		if (CUSTERING_SAMPLES == null) {
+			try {
+				loadClusteringData();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return CUSTERING_SAMPLES;
 	}
 
 	private static void loadUSPSData() throws IOException {
+		USPS_SAMPLES = new ArrayList<Instance<Integer>>();
+
 		FileInputStream is = new FileInputStream(USPS_FILE);
 		BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
@@ -73,6 +158,8 @@ public class Datasets {
 	}
 
 	private static void loadSPAMData() throws IOException {
+		SPAM_SAMPLES = new ArrayList<Instance<Boolean>>();
+
 		FileInputStream is = new FileInputStream(SPAM_FILE);
 		BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
@@ -104,6 +191,8 @@ public class Datasets {
 	}
 
 	private static void loadBirthsData() throws IOException {
+		BIRTHS_SAMPLES = new ArrayList<Instance<Double>>();
+
 		FileInputStream is = new FileInputStream(BIRTHS_FILE);
 		BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
@@ -133,7 +222,9 @@ public class Datasets {
 	}
 
 	protected static void loadReutersData() throws IOException {
-		TextTokenizer tokenizer = new TextTokenizer();
+		REUTERS_SAMPLES = new ArrayList<TextInstance<Integer>>();
+
+		EnglishTokenizer tokenizer = new EnglishTokenizer();
 		Map<String, Integer> topics = new HashMap<String, Integer>();
 
 		FileInputStream is = new FileInputStream(REUTEURS_FILE);
@@ -166,7 +257,93 @@ public class Datasets {
 		}
 	}
 
+	protected static void loadTwitterData() throws IOException {
+		TWITTER_SAMPLES = new ArrayList<TextInstance<Integer>>();
+		TwitterTokenizer tokenizer = new TwitterTokenizer(2, 3);
+
+		FileInputStream is = new FileInputStream(TWITTER_FILE);
+		BufferedReader br = new BufferedReader(new InputStreamReader(is));
+		try {
+			String line;
+			while ((line = br.readLine()) != null) {
+				try {
+					String[] values = line.split("\t");
+
+					Integer classIndex = Integer.parseInt(values[0]);
+					String text = line.substring(line.indexOf(",") + 1);
+
+					TWITTER_SAMPLES.add(new TextInstance<Integer>(classIndex, tokenizer.tokenize(text)));
+				} catch (Exception ex) {
+					System.err.println("Skipped twitter sample because it can't be parsed : " + line);
+				}
+			}
+
+			Collections.shuffle(TWITTER_SAMPLES);
+		} finally {
+			is.close();
+			br.close();
+		}
+	}
+
+	protected static void loadTwitter2Data() throws IOException {
+		TWITTER_SAMPLES2 = new ArrayList<TextInstance<Integer>>();
+		TwitterTokenizer tokenizer = new TwitterTokenizer();
+
+		FileInputStream is = new FileInputStream(TWITTER_FILE2);
+		BufferedReader br = new BufferedReader(new InputStreamReader(is));
+		try {
+			String line;
+			while ((line = br.readLine()) != null) {
+				try {
+					String[] values = line.split(",");
+
+					Integer classIndex = Integer.parseInt(values[0]);
+					String text = line.substring(line.indexOf(",") + 1);
+
+					TWITTER_SAMPLES2.add(new TextInstance<Integer>(classIndex, tokenizer.tokenize(text)));
+				} catch (Exception ex) {
+					System.err.println("Skipped twitter sample because it can't be parsed : " + line);
+				}
+			}
+
+			Collections.shuffle(TWITTER_SAMPLES2);
+		} finally {
+			is.close();
+			br.close();
+		}
+	}
+
+	protected static void loadReviewData() throws IOException {
+		REVIEW_SAMPLES = new ArrayList<TextInstance<Integer>>();
+		EnglishTokenizer tokenizer = new EnglishTokenizer(2, 2);
+
+		FileInputStream is = new FileInputStream(REVIEW_FILE);
+		BufferedReader br = new BufferedReader(new InputStreamReader(is));
+		try {
+			String line;
+			while ((line = br.readLine()) != null) {
+				try {
+					String[] values = line.split(",");
+
+					Integer classIndex = Integer.parseInt(values[0]);
+					String text = line.substring(line.indexOf(",") + 1);
+
+					REVIEW_SAMPLES.add(new TextInstance<Integer>(classIndex, tokenizer.tokenize(text)));
+				} catch (Exception ex) {
+					System.err.println("Skipped review sample because it can't be parsed : " + line);
+				}
+			}
+
+			Collections.shuffle(REVIEW_SAMPLES);
+		} finally {
+			is.close();
+			br.close();
+		}
+	}
+
 	protected static void loadClusteringData() throws IOException {
+		CUSTERING_SAMPLES = new ArrayList<Instance<Integer>>();
+
 		FileInputStream is = new FileInputStream(CLUSTERING_FILE);
 		BufferedReader br = new BufferedReader(new InputStreamReader(is));
 

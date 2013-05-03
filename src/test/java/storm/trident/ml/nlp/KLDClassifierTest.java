@@ -8,7 +8,7 @@ import java.util.List;
 import org.junit.Test;
 
 import storm.trident.ml.core.TextInstance;
-import storm.trident.ml.preprocessing.TextTokenizer;
+import storm.trident.ml.preprocessing.EnglishTokenizer;
 import storm.trident.ml.testing.data.DatasetUtils;
 import storm.trident.ml.testing.data.Datasets;
 
@@ -22,25 +22,24 @@ public class KLDClassifierTest {
 	private final static String LILIUM_WIKI = "Lilium (members of which are true lilies) is a genus of herbaceous flowering plants growing from bulbs, all with large prominent flowers. Lilies are a group of flowering plants which are important in culture and literature in much of the world. Most species are native to the temperate northern hemisphere, though their range extends into the northern subtropics. Many other plants have \"lily\" in their common name but are not related to true lilies.";
 	private final static String ROSE_WIKI = "A rose is a woody perennial of the genus Rosa, within the family Rosaceae. There are over 100 species. They form a group of plants that can be erect shrubs, climbing or trailing with stems that are often armed with sharp prickles. Flowers vary in size and shape and are usually large and showy, in colours ranging from white through yellows and reds. Most species are native to Asia, with smaller numbers native to Europe, North America, and northwest Africa. Species, cultivars and hybrids are all widely grown for their beauty and often are fragrant. Rose plants range in size from compact, miniature roses, to climbers that can reach 7 meters in height. Different species hybridize easily, and this has been used in the development of the wide range of garden roses.";
 
-	private final static TextTokenizer TEXT_TOKENIZER = new TextTokenizer();
-
 	@Test
-	public void testWitSmallWiki() {
-		KLDClassifier kldClassifier = new KLDClassifier(2);
-		kldClassifier.update(0, TEXT_TOKENIZER.tokenize(NOSQL_WIKI));
-		kldClassifier.update(0, TEXT_TOKENIZER.tokenize(MYSQL_WIKI));
-		kldClassifier.update(1, TEXT_TOKENIZER.tokenize(LILIUM_WIKI));
-		kldClassifier.update(1, TEXT_TOKENIZER.tokenize(ROSE_WIKI));
+	public void testWithSmallWiki() {
+		EnglishTokenizer tokenizer = new EnglishTokenizer();
 
-		assertEquals(0, kldClassifier.classify(TEXT_TOKENIZER.tokenize(DATABASE_WIKI)));
-		assertEquals(1, kldClassifier.classify(TEXT_TOKENIZER.tokenize(FLOWER_WIKI)));
+		KLDClassifier kldClassifier = new KLDClassifier(2);
+		kldClassifier.update(0, tokenizer.tokenize(NOSQL_WIKI));
+		kldClassifier.update(0, tokenizer.tokenize(MYSQL_WIKI));
+		kldClassifier.update(1, tokenizer.tokenize(LILIUM_WIKI));
+		kldClassifier.update(1, tokenizer.tokenize(ROSE_WIKI));
+
+		assertEquals(0, kldClassifier.classify(tokenizer.tokenize(DATABASE_WIKI)));
+		assertEquals(1, kldClassifier.classify(tokenizer.tokenize(FLOWER_WIKI)));
 	}
 
-	// @Ignore("TextAnalyser.parse() with big document crash JVM!")
 	@Test
 	public void testWithReuters() {
-		List<TextInstance<Integer>> training = DatasetUtils.getTrainingFolds(0, 10, Datasets.REUTERS_SAMPLES);
-		List<TextInstance<Integer>> eval = DatasetUtils.getEvalFold(0, 10, Datasets.REUTERS_SAMPLES);
+		List<TextInstance<Integer>> training = DatasetUtils.getTrainingFolds(0, 10, Datasets.getReutersSamples());
+		List<TextInstance<Integer>> eval = DatasetUtils.getEvalFold(0, 10, Datasets.getReutersSamples());
 
 		// Use 500 max words per class to speed up test
 		KLDClassifier kldClassifier = new KLDClassifier(9, 500);
@@ -63,5 +62,7 @@ public class KLDClassifierTest {
 
 		double error = errorCount / evalSize;
 		assertTrue("Error " + error + " is to big!", error < 0.1);
+		System.out.println(error);
 	}
+
 }

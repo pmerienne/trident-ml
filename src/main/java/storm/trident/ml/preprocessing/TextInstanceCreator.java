@@ -13,7 +13,7 @@ public class TextInstanceCreator<L> extends BaseFunction {
 	private static final long serialVersionUID = 3312351524410720639L;
 
 	private boolean withLabel = true;
-	private TextTokenizer textAnalyser = new TextTokenizer();
+	private TextTokenizer textAnalyser = new EnglishTokenizer();
 
 	public TextInstanceCreator() {
 	}

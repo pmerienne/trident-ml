@@ -24,7 +24,7 @@ public class KMeansTest extends ClustererTest {
 	@Test
 	public void testAgainstRealDataset() {
 		KMeans kMeans = new KMeans(7);
-		double randIndex = this.eval(kMeans, Datasets.CUSTERING_SAMPLES);
+		double randIndex = this.eval(kMeans, Datasets.getClusteringSamples());
 		assertTrue("RAND index " + randIndex + "  isn't good enough : ", randIndex > 0.63);
 	}
 }
