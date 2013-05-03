@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>storm</groupId>
+  <artifactId>trident-ml</artifactId>
+  <version>0.0.1</version>
+  <versioning>
+    <versions>
+      <version>0.0.1</version>
+    </versions>
+    <lastUpdated>20130503154529</lastUpdated>
+  </versioning>
+</metadata>
