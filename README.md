@@ -222,6 +222,22 @@ toppology
   .each(new Fields("instance", "streamStats"), new StandardScaler(), new Fields("scaledInstance"));
 ```
 
+# Maven integration : 
+
+ ```xml
+<repository>
+	<id>trident-ml</id>
+	<name>trident-ml repo</name>
+	<url>http://github.com/pmerienne/trident-ml/raw/master/releases</url>
+</repository>
+
+<dependency>
+	<groupId>storm</groupId>
+	<artifactId>trident-ml</artifactId>
+	<version>0.0.1</version>
+</dependency>
+ ```
+
 # Upcoming features
 * Noise adaptive filter (LMS, Wiener, Kalman, ...)
 * Distributed algorithms
