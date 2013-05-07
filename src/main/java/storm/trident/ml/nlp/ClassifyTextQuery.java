@@ -11,7 +11,7 @@ import storm.trident.state.map.MapState;
 import storm.trident.tuple.TridentTuple;
 import backtype.storm.tuple.Values;
 
-public class ClassifyTextQuery extends BaseQueryFunction<MapState<TextClassifier>, Integer> {
+public class  ClassifyTextQuery<L> extends BaseQueryFunction<MapState<TextClassifier<L>>, L> {
 
 	private static final long serialVersionUID = -9046858936834644113L;
 
@@ -23,17 +23,17 @@ public class ClassifyTextQuery extends BaseQueryFunction<MapState<TextClassifier
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Integer> batchRetrieve(MapState<TextClassifier> state, List<TridentTuple> tuples) {
-		List<Integer> labels = new ArrayList<Integer>();
+	public List<L> batchRetrieve(MapState<TextClassifier<L>> state, List<TridentTuple> tuples) {
+		List<L> labels = new ArrayList<L>();
 
-		List<TextClassifier> classifiers = state.multiGet(KeysUtil.toKeys(this.classifierName));
+		List<TextClassifier<L>> classifiers = state.multiGet(KeysUtil.toKeys(this.classifierName));
 		if (classifiers != null && !classifiers.isEmpty()) {
-			TextClassifier classifier = classifiers.get(0);
+			TextClassifier<L> classifier = classifiers.get(0);
 
-			Integer label;
-			TextInstance<Integer> instance;
+			L label;
+			TextInstance<L> instance;
 			for (TridentTuple tuple : tuples) {
-				instance = (TextInstance<Integer>) tuple.get(0);
+				instance = (TextInstance<L>) tuple.get(0);
 				label = classifier.classify(instance.tokens);
 				labels.add(label);
 			}
@@ -42,7 +42,7 @@ public class ClassifyTextQuery extends BaseQueryFunction<MapState<TextClassifier
 		return labels;
 	}
 
-	public void execute(TridentTuple tuple, Integer result, TridentCollector collector) {
+	public void execute(TridentTuple tuple, L result, TridentCollector collector) {
 		collector.emit(new Values(result));
 	}
 

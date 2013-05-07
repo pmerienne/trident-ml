@@ -94,7 +94,7 @@ public class MathUtil {
 
 	public static double[] normalize(double[] vector) {
 		double magnitude = magnitude(vector);
-		return mult(vector, 1 / magnitude);
+		return magnitude != 0 ? mult(vector, 1 / magnitude) : vector;
 	}
 
 	public static double magnitude(double[] vector) {

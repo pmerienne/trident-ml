@@ -56,7 +56,7 @@ public class PAClassifier implements Classifier<Boolean> {
 		double update = 0;
 
 		if (Type.STANDARD.equals(this.type)) {
-			update = loss / Math.pow(MathUtil.norm(features), 2);
+			update = loss / (1 + Math.pow(MathUtil.norm(features), 2));
 		} else if (Type.PA1.equals(this.type)) {
 			update = Math.min(this.aggressiveness, loss / Math.pow(MathUtil.norm(features), 2));
 		} else if (Type.PA2.equals(this.type)) {

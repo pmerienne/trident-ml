@@ -32,7 +32,7 @@ public class KLDClassifierTridentIntegration {
 					.each(new Fields("label", "text"), new TextInstanceCreator<Integer>(), new Fields("instance"))
 
 					// Update text classifier
-					.partitionPersist(new MemoryMapState.Factory(), new Fields("instance"), new TextClassifierUpdater("newsClassifier", new KLDClassifier(9)));
+					.partitionPersist(new MemoryMapState.Factory(), new Fields("instance"), new TextClassifierUpdater<Integer>("newsClassifier", new KLDClassifier(9)));
 
 			// Classification stream
 			toppology.newDRPCStream("classify", localDRPC)
@@ -40,7 +40,7 @@ public class KLDClassifierTridentIntegration {
 					.each(new Fields("args"), new TextInstanceCreator<Integer>(false), new Fields("instance"))
 
 					// Query classifier with text instance
-					.stateQuery(classifierState, new Fields("instance"), new ClassifyTextQuery("newsClassifier"), new Fields("prediction")).project(new Fields("prediction"));
+					.stateQuery(classifierState, new Fields("instance"), new ClassifyTextQuery<Integer>("newsClassifier"), new Fields("prediction")).project(new Fields("prediction"));
 
 			cluster.submitTopology(this.getClass().getSimpleName(), new Config(), toppology.build());
 			Thread.sleep(4000);

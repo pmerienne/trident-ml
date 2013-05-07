@@ -10,24 +10,24 @@ import storm.trident.state.BaseStateUpdater;
 import storm.trident.state.map.MapState;
 import storm.trident.tuple.TridentTuple;
 
-public class TextClassifierUpdater extends BaseStateUpdater<MapState<TextClassifier>> {
+public class TextClassifierUpdater<L> extends BaseStateUpdater<MapState<TextClassifier<L>>> {
 
 	private static final long serialVersionUID = 1943890181994862536L;
 
 	private String classifierName;
-	private TextClassifier initialClassifier;
+	private TextClassifier<L> initialClassifier;
 
-	public TextClassifierUpdater(String classifierName, TextClassifier initialClassifier) {
+	public TextClassifierUpdater(String classifierName, TextClassifier<L> initialClassifier) {
 		this.classifierName = classifierName;
 		this.initialClassifier = initialClassifier;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void updateState(MapState<TextClassifier> state, List<TridentTuple> tuples, TridentCollector collector) {
+	public void updateState(MapState<TextClassifier<L>> state, List<TridentTuple> tuples, TridentCollector collector) {
 		// Get model
-		List<TextClassifier> classifiers = state.multiGet(KeysUtil.toKeys(this.classifierName));
-		TextClassifier classifier = null;
+		List<TextClassifier<L>> classifiers = state.multiGet(KeysUtil.toKeys(this.classifierName));
+		TextClassifier<L> classifier = null;
 		if (classifiers != null && !classifiers.isEmpty()) {
 			classifier = classifiers.get(0);
 		}
@@ -38,9 +38,9 @@ public class TextClassifierUpdater extends BaseStateUpdater<MapState<TextClassif
 		}
 
 		// Update model
-		TextInstance<Integer> instance;
+		TextInstance<L> instance;
 		for (TridentTuple tuple : tuples) {
-			instance = (TextInstance<Integer>) tuple.get(0);
+			instance = (TextInstance<L>) tuple.get(0);
 			classifier.update(instance.label, instance.tokens);
 		}
 

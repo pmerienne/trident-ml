@@ -25,16 +25,14 @@ public class Datasets {
 	private final static File BIRTHS_FILE = new File("src/test/resources/births.csv");
 	private final static File REUTEURS_FILE = new File("src/test/resources/reuters.csv");
 	private final static File CLUSTERING_FILE = new File("src/test/resources/clustering-data.csv");
-	private final static File TWITTER_FILE = new File("src/test/resources/twitter-sentiment.csv");
-	private final static File TWITTER_FILE2 = new File("src/test/resources/twitter-sentiment2.csv");
+	private final static File SMALL_TWITTER_FILE = new File("src/test/resources/twitter-sentiment.csv");
 	private final static File REVIEW_FILE = new File("src/test/resources/review-sentiment.csv");
 
 	private static List<Instance<Boolean>> SPAM_SAMPLES;
 	private static List<Instance<Integer>> USPS_SAMPLES;
 	private static List<Instance<Double>> BIRTHS_SAMPLES;
 	private static List<TextInstance<Integer>> REUTERS_SAMPLES;
-	private static List<TextInstance<Integer>> TWITTER_SAMPLES;
-	private static List<TextInstance<Integer>> TWITTER_SAMPLES2;
+	private static List<TextInstance<Boolean>> SMALL_TWITTER_SAMPLES;
 	private static List<TextInstance<Integer>> REVIEW_SAMPLES;
 	private static List<Instance<Integer>> CUSTERING_SAMPLES;
 
@@ -48,7 +46,7 @@ public class Datasets {
 		}
 		return REVIEW_SAMPLES;
 	}
-	
+
 	public static List<Instance<Boolean>> getSpamSamples() {
 		if (SPAM_SAMPLES == null) {
 			try {
@@ -93,26 +91,15 @@ public class Datasets {
 		return REUTERS_SAMPLES;
 	}
 
-	public static List<TextInstance<Integer>> getTwitterSamples() {
-		if (TWITTER_SAMPLES == null) {
+	public static List<TextInstance<Boolean>> getSmallTwitterSamples() {
+		if (SMALL_TWITTER_SAMPLES == null) {
 			try {
-				loadTwitterData();
+				loadSmallTwitterData();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		return TWITTER_SAMPLES;
-	}
-
-	public static List<TextInstance<Integer>> getTwitter2Samples() {
-		if (TWITTER_SAMPLES2 == null) {
-			try {
-				loadTwitter2Data();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return TWITTER_SAMPLES2;
+		return SMALL_TWITTER_SAMPLES;
 	}
 
 	public static List<Instance<Integer>> getClusteringSamples() {
@@ -257,39 +244,11 @@ public class Datasets {
 		}
 	}
 
-	protected static void loadTwitterData() throws IOException {
-		TWITTER_SAMPLES = new ArrayList<TextInstance<Integer>>();
-		TwitterTokenizer tokenizer = new TwitterTokenizer(2, 3);
+	protected static void loadSmallTwitterData() throws IOException {
+		SMALL_TWITTER_SAMPLES = new ArrayList<TextInstance<Boolean>>();
+		TwitterTokenizer tokenizer = new TwitterTokenizer(2, 2);
 
-		FileInputStream is = new FileInputStream(TWITTER_FILE);
-		BufferedReader br = new BufferedReader(new InputStreamReader(is));
-		try {
-			String line;
-			while ((line = br.readLine()) != null) {
-				try {
-					String[] values = line.split("\t");
-
-					Integer classIndex = Integer.parseInt(values[0]);
-					String text = line.substring(line.indexOf(",") + 1);
-
-					TWITTER_SAMPLES.add(new TextInstance<Integer>(classIndex, tokenizer.tokenize(text)));
-				} catch (Exception ex) {
-					System.err.println("Skipped twitter sample because it can't be parsed : " + line);
-				}
-			}
-
-			Collections.shuffle(TWITTER_SAMPLES);
-		} finally {
-			is.close();
-			br.close();
-		}
-	}
-
-	protected static void loadTwitter2Data() throws IOException {
-		TWITTER_SAMPLES2 = new ArrayList<TextInstance<Integer>>();
-		TwitterTokenizer tokenizer = new TwitterTokenizer();
-
-		FileInputStream is = new FileInputStream(TWITTER_FILE2);
+		FileInputStream is = new FileInputStream(SMALL_TWITTER_FILE);
 		BufferedReader br = new BufferedReader(new InputStreamReader(is));
 		try {
 			String line;
@@ -297,16 +256,16 @@ public class Datasets {
 				try {
 					String[] values = line.split(",");
 
-					Integer classIndex = Integer.parseInt(values[0]);
+					Boolean label = !values[0].equals("0");
 					String text = line.substring(line.indexOf(",") + 1);
 
-					TWITTER_SAMPLES2.add(new TextInstance<Integer>(classIndex, tokenizer.tokenize(text)));
+					SMALL_TWITTER_SAMPLES.add(new TextInstance<Boolean>(label, tokenizer.tokenize(text)));
 				} catch (Exception ex) {
 					System.err.println("Skipped twitter sample because it can't be parsed : " + line);
 				}
 			}
 
-			Collections.shuffle(TWITTER_SAMPLES2);
+			Collections.shuffle(SMALL_TWITTER_SAMPLES);
 		} finally {
 			is.close();
 			br.close();

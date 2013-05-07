@@ -63,7 +63,7 @@ public class MultiClassPAClassifier implements Classifier<Integer> {
 		double tau = 0.0;
 
 		if (Type.STANDARD.equals(this.type)) {
-			tau = loss / (2 * Math.pow(MathUtil.norm(features), 2));
+			tau = loss / (1 + 2 * Math.pow(MathUtil.norm(features), 2));
 		} else if (Type.PA1.equals(this.type)) {
 			tau = Math.min(this.aggressiveness / 2, loss / (2 * Math.pow(MathUtil.norm(features), 2)));
 		} else if (Type.PA2.equals(this.type)) {

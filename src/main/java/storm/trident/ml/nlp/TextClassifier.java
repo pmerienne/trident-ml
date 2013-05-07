@@ -2,9 +2,9 @@ package storm.trident.ml.nlp;
 
 import java.util.List;
 
-public interface TextClassifier {
+public interface TextClassifier<L> {
 
-	void update(int label, List<String> documentWords);
+	void update(L label, List<String> documentWords);
 
-	int classify(List<String> documentWords);
+	L classify(List<String> documentWords);
 }

@@ -14,7 +14,7 @@ import java.util.Set;
  * @author pmerienne
  * 
  */
-public class KLDClassifier implements TextClassifier, TextFeaturesExtractor, Serializable {
+public class KLDClassifier implements TextClassifier<Integer>, TextFeaturesExtractor, Serializable {
 
 	private static final long serialVersionUID = 3869875629653284342L;
 
@@ -50,11 +50,31 @@ public class KLDClassifier implements TextClassifier, TextFeaturesExtractor, Ser
 
 	@Override
 	public double[] extractFeatures(List<String> documentWords) {
-		return this.distance(documentWords);
+		Vocabulary documentVocabulary = new Vocabulary(documentWords);
+
+		Set<String> vocabulary = this.createGlobalVocabulary();
+		int vocabularySize = vocabulary.size();
+		int nbClasses = this.classVocabularies.size();
+
+		double[] features = new double[vocabularySize * nbClasses];
+
+		double beta = this.caculateBeta(documentVocabulary);
+		Double tpd, tpc;
+		int i = 0;
+		for (String word : vocabulary) {
+			tpd = this.wordProbabilityInDocument(word, documentVocabulary, beta);
+			for (int j = 0; j < nbClasses; j++) {
+				tpc = this.wordProbabilityInCategory(word, 0);
+				features[j * vocabularySize + i] = (tpc - tpd) * Math.log(tpc / tpd);
+			}
+			i++;
+		}
+
+		return features;
 	}
 
 	@Override
-	public void update(int classIndex, List<String> documentWords) {
+	public void update(Integer classIndex, List<String> documentWords) {
 		// Update class vocabulary
 		Vocabulary classVocabulary = this.classVocabularies.get(classIndex);
 		classVocabulary.addAll(documentWords);
@@ -68,7 +88,7 @@ public class KLDClassifier implements TextClassifier, TextFeaturesExtractor, Ser
 	}
 
 	@Override
-	public int classify(List<String> documentWords) {
+	public Integer classify(List<String> documentWords) {
 		int classIndex = -1;
 
 		double[] distances = this.distance(documentWords);
