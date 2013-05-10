@@ -172,9 +172,7 @@ public class Datasets {
 					Boolean label = "1".equals(values[values.length - 1]);
 					double[] features = new double[values.length - 1];
 					for (int i = 0; i < values.length - 1; i++) {
-						double original = Double.parseDouble(values[i]);
-						double rescaled = -3.0 + 4.0 / (1 + Math.exp(-(original)));
-						features[i] = rescaled;
+						features[i] = Double.parseDouble(values[i]);
 					}
 
 					SPAM_SAMPLES.add(new Instance<Boolean>(label, features));

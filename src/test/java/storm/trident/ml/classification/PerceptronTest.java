@@ -27,7 +27,7 @@ public class PerceptronTest extends ClassifierTest {
 	@Test
 	public void testWithSPAMData() {
 		double error = this.eval(new PerceptronClassifier(), Datasets.getSpamSamples());
-		assertTrue("Error " + error + " is to big!", error < 0.25);
+		assertTrue("Error " + error + " is to big!", error < 0.05);
 	}
 
 }

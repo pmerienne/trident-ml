@@ -17,6 +17,6 @@ public class BWinnowTest extends ClassifierTest {
 	@Test
 	public void testWithSPAMData() {
 		double error = this.eval(new BWinnowClassifier(), Datasets.getSpamSamples());
-		assertTrue("Error " + error + " is to big!", error < 0.25);
+		assertTrue("Error " + error + " is to big!", error < 0.05);
 	}
 }

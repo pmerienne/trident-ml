@@ -35,10 +35,9 @@ public class PATest extends ClassifierTest {
 		double error = this.eval(new PAClassifier(), Datasets.getSpamSamples());
 		double error1 = this.eval(new PAClassifier(Type.PA1), Datasets.getSpamSamples());
 		double error2 = this.eval(new PAClassifier(Type.PA2), Datasets.getSpamSamples());
-
-		assertTrue("Error " + error + " is to big!", error <= 0.25);
-		assertTrue("Error " + error + " is to big!", error1 <= 0.25);
-		assertTrue("Error " + error + " is to big!", error2 <= 0.25);
+		assertTrue("Error " + error + " is to big!", error <= 0.20);
+		assertTrue("Error " + error + " is to big!", error1 <= 0.20);
+		assertTrue("Error " + error + " is to big!", error2 <= 0.20);
 	}
 
 }
