@@ -146,7 +146,7 @@ public class Datasets {
 
 					USPS_SAMPLES.add(new Instance<Integer>(label, features));
 				} catch (Exception ex) {
-					System.out.println("Skipped USPS sample : " + line);
+					System.err.println("Skipped USPS sample : " + line);
 				}
 			}
 
@@ -177,7 +177,7 @@ public class Datasets {
 
 					SPAM_SAMPLES.add(new Instance<Boolean>(label, features));
 				} catch (Exception ex) {
-					System.out.println("Skipped PML sample : " + line);
+					System.err.println("Skipped SPAM sample : " + line);
 				}
 			}
 
@@ -208,7 +208,7 @@ public class Datasets {
 
 					BIRTHS_SAMPLES.add(new Instance<Double>(label, features));
 				} catch (Exception ex) {
-					System.out.println("Skipped PML sample : " + line);
+					System.out.println("Skipped BIRTHS sample : " + line);
 				}
 			}
 

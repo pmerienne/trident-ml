@@ -15,13 +15,13 @@ public class AROWTest extends ClassifierTest {
 	public void testWithNand() {
 		List<Instance<Boolean>> samples = Datasets.generatedNandInstances(100);
 		double error = this.eval(new AROWClassifier(), samples);
-		assertTrue("Error " + error + " is to big!", error < 0.01);
+		assertTrue("Error " + error + " is to big!", error < 0.05);
 	}
 
 	@Test
 	public void testWithGaussianData() {
 		double error = this.eval(new AROWClassifier(), Datasets.generateDataForClassification(1000, 10));
-		assertTrue("Error " + error + " is to big!", error <= 0.01);
+		assertTrue("Error " + error + " is to big!", error <= 0.05);
 	}
 
 	@Test

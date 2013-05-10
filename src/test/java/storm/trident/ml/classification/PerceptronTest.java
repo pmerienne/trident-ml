@@ -15,13 +15,13 @@ public class PerceptronTest extends ClassifierTest {
 	public void testWithNand() {
 		List<Instance<Boolean>> samples = Datasets.generatedNandInstances(100);
 		double error = this.eval(new PerceptronClassifier(), samples);
-		assertTrue("Error " + error + " is to big!", error < 0.001);
+		assertTrue("Error " + error + " is to big!", error < 0.05);
 	}
 
 	@Test
 	public void testWithGaussianData() {
 		double error = this.eval(new PerceptronClassifier(), Datasets.generateDataForClassification(100, 10));
-		assertTrue("Error " + error + " is to big!", error < 0.01);
+		assertTrue("Error " + error + " is to big!", error < 0.05);
 	}
 
 	@Test

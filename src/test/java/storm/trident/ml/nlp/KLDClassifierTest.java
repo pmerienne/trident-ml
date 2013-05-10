@@ -62,7 +62,6 @@ public class KLDClassifierTest {
 
 		double error = errorCount / evalSize;
 		assertTrue("Error " + error + " is to big!", error < 0.1);
-		System.out.println(error);
 	}
 
 }

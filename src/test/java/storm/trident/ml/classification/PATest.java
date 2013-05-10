@@ -16,7 +16,7 @@ public class PATest extends ClassifierTest {
 	public void testWithNand() {
 		List<Instance<Boolean>> samples = Datasets.generatedNandInstances(100);
 		double error = this.eval(new PAClassifier(), samples);
-		assertTrue("Error " + error + " is to big!", error < 0.01);
+		assertTrue("Error " + error + " is to big!", error < 0.05);
 	}
 
 	@Test

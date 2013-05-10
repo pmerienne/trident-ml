@@ -61,7 +61,7 @@ public class StandardScalerIntegrationTest {
 
 			cluster.submitTopology("testStandardScaler", new Config(), toppology.build());
 
-			Thread.sleep(4000);
+			Thread.sleep(8000);
 
 			double mean0 = extractDouble(localDRPC.execute("queryStats", "[[0, \"MEAN\"]]"));
 			double mean1 = extractDouble(localDRPC.execute("queryStats", "[[1, \"MEAN\"]]"));
