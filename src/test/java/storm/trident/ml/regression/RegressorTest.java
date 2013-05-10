@@ -44,7 +44,8 @@ public abstract class RegressorTest {
 		for (Instance<Double> sample : eval) {
 			actualPrediction = regressor.predict(sample.features);
 			rmse += Math.pow(actualPrediction - sample.label, 2);
-			System.out.println("Was " + sample.label + ", Found " + actualPrediction);
+			// System.out.println("Was " + sample.label + ", Found " +
+			// actualPrediction);
 		}
 
 		return Math.sqrt(rmse / eval.size());
