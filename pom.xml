@@ -117,17 +117,6 @@
 		</plugins>
 	</build>
 
-	<distributionManagement>
-		<repository>
-			<id>release-repo</id>
-			<url>https://pmerienne@github.com/pmerienne/trident-ml/raw/master/releases</url>
-		</repository>
-		<snapshotRepository>
-			<id>snapshot-repo</id>
-			<url>https://pmerienne@github.com/pmerienne/trident-ml/raw/master/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
-
 	<scm>
 		<connection>scm:git:git@github.com:pmerienne/trident-ml.git</connection>
 		<developerConnection>scm:git:git@github.com:pmerienne/trident-ml.git</developerConnection>
@@ -178,7 +167,6 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-release-plugin</artifactId>
-						<version>2.2.2</version>
 						<configuration>
 							<arguments>-Dgpg.passphrase=${gpg.passphrase}</arguments>
 						</configuration>
@@ -220,6 +208,7 @@
 
 		<profile>
 			<id>clojars-release</id>
+
 			<distributionManagement>
 				<repository>
 					<id>clojars</id>
@@ -231,6 +220,7 @@
 
 		<profile>
 			<id>github-release</id>
+
 			<properties>
 				<!--Trick to deploy releases (using mvn release:perform) to the local 
 					file system. The release is actually performed from target/checkout, which 
@@ -238,6 +228,17 @@
 					and push to the git repository. -->
 				<altDeploymentRepository>release-repo::default::file:../../releases</altDeploymentRepository>
 			</properties>
+
+			<distributionManagement>
+				<repository>
+					<id>release-repo</id>
+					<url>https://pmerienne@github.com/pmerienne/trident-ml/raw/master/releases</url>
+				</repository>
+				<snapshotRepository>
+					<id>snapshot-repo</id>
+					<url>https://pmerienne@github.com/pmerienne/trident-ml/raw/master/snapshots</url>
+				</snapshotRepository>
+			</distributionManagement>
 		</profile>
 	</profiles>
 </project>
