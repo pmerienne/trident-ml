@@ -25,9 +25,9 @@ public class PATest extends ClassifierTest {
 		double error1 = this.eval(new PAClassifier(Type.PA1), Datasets.generateDataForClassification(1000, 10));
 		double error2 = this.eval(new PAClassifier(Type.PA2), Datasets.generateDataForClassification(1000, 10));
 
-		assertTrue("Error " + error + " is to big!", error <= 0.01);
-		assertTrue("Error " + error + " is to big!", error1 <= 0.01);
-		assertTrue("Error " + error + " is to big!", error2 <= 0.01);
+		assertTrue("Error " + error + " is to big!", error <= 0.05);
+		assertTrue("Error " + error + " is to big!", error1 <= 0.05);
+		assertTrue("Error " + error + " is to big!", error2 <= 0.05);
 	}
 
 	@Test
