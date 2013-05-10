@@ -26,12 +26,6 @@
 	</developers>
 
 	<properties>
-		<!--Trick to deploy releases (using mvn release:perform) to the local file 
-			system. The release is actually performed from target/checkout, which is 
-			why we need those ../../ . Notice that after deployment, you should commit 
-			and push to the git repository. -->
-		<altDeploymentRepository>release-repo::default::file:../../releases</altDeploymentRepository>
-
 		<!-- Compiler properties -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.6</maven.compiler.source>
@@ -153,7 +147,6 @@
 		</dependency>
 	</dependencies>
 
-
 	<profiles>
 		<profile>
 			<id>sonatype-release</id>
@@ -203,7 +196,7 @@
 		</profile>
 
 		<profile>
-			<id>clojars</id>
+			<id>clojars-release</id>
 			<distributionManagement>
 				<repository>
 					<id>clojars</id>
@@ -211,6 +204,17 @@
 					<url>https://clojars.org/repo</url>
 				</repository>
 			</distributionManagement>
+		</profile>
+
+		<profile>
+			<id>github-release</id>
+			<properties>
+				<!--Trick to deploy releases (using mvn release:perform) to the local 
+					file system. The release is actually performed from target/checkout, which 
+					is why we need those ../../ . Notice that after deployment, you should commit 
+					and push to the git repository. -->
+				<altDeploymentRepository>release-repo::default::file:../../releases</altDeploymentRepository>
+			</properties>
 		</profile>
 	</profiles>
 </project>
