@@ -24,7 +24,7 @@ public class Datasets {
 	private final static File SPAM_FILE = new File("src/test/resources/spam.csv");
 	private final static File BIRTHS_FILE = new File("src/test/resources/births.csv");
 	private final static File REUTEURS_FILE = new File("src/test/resources/reuters.csv");
-	private final static File CLUSTERING_FILE = new File("src/test/resources/clustering-data.csv");
+	private final static File CLUSTERING_FILE = new File("src/test/resources/seeds.csv");
 	private final static File TWITTER_FILE = new File("src/test/resources/twitter-sentiment.csv");
 	private final static File TWITTER_FILE2 = new File("src/test/resources/twitter-sentiment2.csv");
 	private final static File REVIEW_FILE = new File("src/test/resources/review-sentiment.csv");
@@ -349,13 +349,13 @@ public class Datasets {
 			String line;
 			while ((line = br.readLine()) != null) {
 				try {
-					String[] values = line.split(",");
+					String[] values = line.split(";");
 
-					Integer label = Integer.parseInt(values[0]);
+					Integer label = Integer.parseInt(values[7]);
 
 					double[] features = new double[values.length - 1];
-					for (int i = 1; i < values.length; i++) {
-						features[i - 1] = Double.parseDouble(values[i]);
+					for (int i = 0; i < values.length - 1; i++) {
+						features[i] = Double.parseDouble(values[i]);
 					}
 
 					CUSTERING_SAMPLES.add(new Instance<Integer>(label, features));
