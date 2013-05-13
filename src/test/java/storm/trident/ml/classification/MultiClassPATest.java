@@ -1,3 +1,18 @@
+/**
+ * Copyright 2013-2015 Pierre Merienne
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * 		http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package storm.trident.ml.classification;
 
 import static org.junit.Assert.assertTrue;
@@ -19,9 +34,9 @@ public class MultiClassPATest extends ClassifierTest {
 		double actualError1 = this.eval(new MultiClassPAClassifier(10, Type.PA1), dataset);
 		double actualError2 = this.eval(new MultiClassPAClassifier(10, Type.PA2), dataset);
 
-		assertTrue("Error " + actualError + " is to big!", actualError < 0.01);
-		assertTrue("Error " + actualError1 + " is to big!", actualError1 < 0.01);
-		assertTrue("Error " + actualError2 + " is to big!", actualError2 < 0.01);
+		assertTrue("Error " + actualError + " is to big!", actualError < 0.05);
+		assertTrue("Error " + actualError1 + " is to big!", actualError1 < 0.05);
+		assertTrue("Error " + actualError2 + " is to big!", actualError2 < 0.05);
 	}
 
 	@Test
@@ -30,8 +45,8 @@ public class MultiClassPATest extends ClassifierTest {
 		double actualError1 = this.eval(new MultiClassPAClassifier(10, Type.PA1), Datasets.getUSPSSamples());
 		double actualError2 = this.eval(new MultiClassPAClassifier(10, Type.PA2), Datasets.getUSPSSamples());
 
-		assertTrue("Error " + actualError + " is to big!", actualError < 0.15);
+		assertTrue("Error " + actualError + " is to big!", actualError < 0.30);
 		assertTrue("Error " + actualError1 + " is to big!", actualError1 < 0.30);
-		assertTrue("Error " + actualError2 + " is to big!", actualError2 < 0.15);
+		assertTrue("Error " + actualError2 + " is to big!", actualError2 < 0.30);
 	}
 }
