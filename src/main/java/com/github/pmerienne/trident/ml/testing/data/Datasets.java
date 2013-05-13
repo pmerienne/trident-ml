@@ -97,7 +97,7 @@ public class Datasets {
 	public static List<TextInstance<Boolean>> getTwitterSamples() {
 		if (TWITTER_SAMPLES == null) {
 			try {
-				loadSmallTwitterData();
+				loadTwitterData();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -245,7 +245,7 @@ public class Datasets {
 		}
 	}
 
-	protected static void loadSmallTwitterData() throws IOException {
+	protected static void loadTwitterData() throws IOException {
 		TWITTER_SAMPLES = new ArrayList<TextInstance<Boolean>>();
 		TwitterTokenizer tokenizer = new TwitterTokenizer(2, 2);
 

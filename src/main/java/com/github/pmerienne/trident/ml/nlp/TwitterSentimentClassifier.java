@@ -23,15 +23,16 @@ import java.util.List;
 
 import org.codehaus.jackson.map.ObjectMapper;
 
-import com.github.pmerienne.trident.ml.classification.Classifier;
-import com.github.pmerienne.trident.ml.classification.PAClassifier;
-import com.github.pmerienne.trident.ml.core.TextInstance;
-import com.github.pmerienne.trident.ml.testing.data.Datasets;
-
 import storm.trident.operation.BaseFunction;
 import storm.trident.operation.TridentCollector;
 import storm.trident.tuple.TridentTuple;
 import backtype.storm.tuple.Values;
+
+import com.github.pmerienne.trident.ml.classification.Classifier;
+import com.github.pmerienne.trident.ml.classification.PAClassifier;
+import com.github.pmerienne.trident.ml.core.TextInstance;
+import com.github.pmerienne.trident.ml.preprocessing.TwitterTokenizer;
+import com.github.pmerienne.trident.ml.testing.data.Datasets;
 
 public class TwitterSentimentClassifier extends BaseFunction implements Serializable {
 
@@ -39,6 +40,8 @@ public class TwitterSentimentClassifier extends BaseFunction implements Serializ
 
 	protected TextFeaturesExtractor featuresExtractor;
 	protected Classifier<Boolean> classifier;
+
+	private TwitterTokenizer tokenizer = new TwitterTokenizer(2, 2);
 
 	public TwitterSentimentClassifier() {
 		try {
@@ -49,16 +52,16 @@ public class TwitterSentimentClassifier extends BaseFunction implements Serializ
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(TridentTuple tuple, TridentCollector collector) {
-		TextInstance<Boolean> instance = (TextInstance<Boolean>) tuple.get(0);
-		boolean prediction = this.classify(instance.tokens);
+		String text = tuple.getString(0);
+		boolean prediction = this.classify(text);
 		collector.emit(new Values(prediction));
 	}
 
-	protected Boolean classify(List<String> documentWords) {
-		double[] features = this.featuresExtractor.extractFeatures(documentWords);
+	protected Boolean classify(String text) {
+		List<String> tokens = this.tokenizer.tokenize(text);
+		double[] features = this.featuresExtractor.extractFeatures(tokens);
 		Boolean prediction = this.classifier.classify(features);
 		return prediction;
 	}

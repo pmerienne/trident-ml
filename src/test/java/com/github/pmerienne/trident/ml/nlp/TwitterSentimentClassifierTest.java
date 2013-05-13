@@ -19,10 +19,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.github.pmerienne.trident.ml.nlp.TwitterSentimentClassifier;
-import com.github.pmerienne.trident.ml.preprocessing.EnglishTokenizer;
-
-
 public class TwitterSentimentClassifierTest {
 
 	@Test
@@ -45,7 +41,7 @@ public class TwitterSentimentClassifierTest {
 	}
 
 	protected void test(boolean expected, String text, TwitterSentimentClassifier classifier) {
-		boolean actual = classifier.classify(new EnglishTokenizer(2, 2).tokenize(text));
+		boolean actual = classifier.classify(text);
 		assertEquals("Expecting " + expected + " but was " + actual + " for " + text, expected, actual);
 	}
 }

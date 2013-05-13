@@ -15,14 +15,16 @@
  */
 package com.github.pmerienne.trident.ml.nlp;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.github.pmerienne.trident.ml.util.MathUtil;
 
+public class TFIDF implements TextFeaturesExtractor, Serializable {
 
-public class TFIDF implements TextFeaturesExtractor {
+	private static final long serialVersionUID = -6758089189650946158L;
 
 	private Integer corpusSize;
 	private Map<String, Double> termsInverseDocumentFrequencies;
