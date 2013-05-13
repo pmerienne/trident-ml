@@ -19,11 +19,11 @@ It's recommended to read the [Storm and Trident documentation](https://github.co
 
 ## Create instances
 
-Trident-ML process unbounded streams of data implemented by an infinite collection of [Instance](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/core/Instance.java) or [TextInstance](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/core/TextInstance.java).
+Trident-ML process unbounded streams of data implemented by an infinite collection of [Instance](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/com/github/pmerienne/trident/ml/core/Instance.java) or [TextInstance](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/com/github/pmerienne/trident/ml/core/TextInstance.java).
 Creating instances is the first step to build a prediction tools.
 Trident-ML offers [Trident functions](https://github.com/nathanmarz/storm/wiki/Trident-API-Overview#functions) to convert Trident tuples to instances :
 
-* Use [InstanceCreator](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/preprocessing/InstanceCreator.java) to create [Instance](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/core/Instance.java)
+* Use [InstanceCreator](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/com/github/pmerienne/trident/ml/preprocessing/InstanceCreator.java) to create [Instance](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/com/github/pmerienne/trident/ml/core/Instance.java)
 
 ```java
 TridentTopology toppology = new TridentTopology();
@@ -36,7 +36,7 @@ toppology
   .each(new Fields("label", "x0", "x1"), new InstanceCreator<Boolean>(), new Fields("instance"));
 ```
 
-* Use [TextInstanceCreator](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/preprocessing/TextInstanceCreator.java) to create [TextInstance](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/core/TextInstance.java)
+* Use [TextInstanceCreator](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/com/github/pmerienne/trident/ml/preprocessing/TextInstanceCreator.java) to create [TextInstance](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/com/github/pmerienne/trident/ml/core/TextInstance.java)
 
 ```java
 TridentTopology toppology = new TridentTopology();
@@ -51,26 +51,26 @@ toppology
 
 ## Supervised classification
 Trident-ML includes differents algorithms to do supervised classification : 
-* [PerceptronClassifier](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/classification/PerceptronClassifier.java)
+* [PerceptronClassifier](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/com/github/pmerienne/trident/ml/classification/PerceptronClassifier.java)
 implements a binary classifier based on an averaged kernel-based perceptron.
-* [WinnowClassifier](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/classification/WinnowClassifier.java)
+* [WinnowClassifier](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/com/github/pmerienne/trident/ml/classification/WinnowClassifier.java)
 implements [Winnow algorithm](http://link.springer.com/content/pdf/10.1007%2FBF00116827.pdf).
 It scales well to high-dimensional data and performs better than a perceptron when many dimensions are irrelevant. 
-* [BWinnowClassifier](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/classification/BWinnowClassifier.java)
+* [BWinnowClassifier](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/com/github/pmerienne/trident/ml/classification/BWinnowClassifier.java)
  is an implementation of the [Balanced Winnow algorithm](http://link.springer.com/content/pdf/10.1007%2FBF00116827.pdf) 
 an extension of the original Winnow algorithm.
-* [AROWClassifier](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/classification/AROWClassifier.java)
+* [AROWClassifier](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/com/github/pmerienne/trident/ml/classification/AROWClassifier.java)
 is an simple and efficient implementation of [Adaptive Regularization of Weights](http://books.nips.cc/papers/files/nips22/NIPS2009_0611.pdf).
 It combines several useful properties : large margin training, confidence weighting, and the capacity to handle non-separable data.
-* [PAClassifier](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/classification/PAClassifier.java)
+* [PAClassifier](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/com/github/pmerienne/trident/ml/classification/PAClassifier.java)
 implements the [Passive-Aggresive binary classifier](http://eprints.pascal-network.org/archive/00002147/01/CrammerDeKeShSi06.pdf)
 a margin based learning algorithm.
-* [MultiClassPAClassifier](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/classification/MultiClassPAClassifier.java)
+* [MultiClassPAClassifier](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/com/github/pmerienne/trident/ml/classification/MultiClassPAClassifier.java)
 a variant of the Passive-Aggresive performing one-vs-all multiclass classification.
 
-Theses classifiers learn from a datastream of labeled [Instance](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/core/Instance.java)
-using a [ClassifierUpdater](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/classification/ClassifierUpdater.java).
-Another datastream of unlabeled instance can be classified with a [ClassifyQuery](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/classification/ClassifyQuery.java).
+Theses classifiers learn from a datastream of labeled [Instance](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/com/github/pmerienne/trident/ml/core/Instance.java)
+using a [ClassifierUpdater](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/com/github/pmerienne/trident/ml/classification/ClassifierUpdater.java).
+Another datastream of unlabeled instance can be classified with a [ClassifyQuery](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/com/github/pmerienne/trident/ml/classification/ClassifyQuery.java).
 
 The following example learn a NAND function and classify instances comming from a DRPC stream.
 
@@ -95,7 +95,7 @@ toppology.newDRPCStream("predict", localDRPC)
   .stateQuery(perceptronModel, new Fields("instance"), new ClassifyQuery<Boolean>("perceptron"), new Fields("prediction"));
 ```				
 
-Trident-ML provides the [KLDClassifier](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/nlp/KLDClassifier.java)
+Trident-ML provides the [KLDClassifier](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/com/github/pmerienne/trident/ml/nlp/KLDClassifier.java)
 which implements a [text classifier using the Kullback-Leibler Distance](http://lvk.cs.msu.su/~bruzz/articles/classification/Using%20Kullback-Leibler%20Distance%20for%20Text%20Categorization.pdf).
 
 Here's the code to build a news classifier using Reuters dataset :
@@ -125,12 +125,12 @@ toppology.newDRPCStream("classify", localDRPC)
 ```
 
 ## Unsupervised classification
-[KMeans](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/clustering/KMeans.java)
+[KMeans](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/com/github/pmerienne/trident/ml/clustering/KMeans.java)
 is an implementation of the well known [k-means algorithm](http://en.wikipedia.org/wiki/K-means_clustering)
 which partitions instances into clusters.
 
-Use a [ClusterUpdater](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/clustering/ClusterUpdater.java)
-or a [ClusterQuery](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/clustering/ClusterQuery.java)
+Use a [ClusterUpdater](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/com/github/pmerienne/trident/ml/clustering/ClusterUpdater.java)
+or a [ClusterQuery](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/com/github/pmerienne/trident/ml/clustering/ClusterQuery.java)
 to respectively udpate clusters or query the clusterer :
 
 ```java
@@ -158,8 +158,8 @@ toppology.newDRPCStream("predict", localDRPC)
 
 ## Stream statistics
 Stream statistics such as mean, standard deviation and count can be easily computed using Trident-ML.
-Theses statistics are stored in a [StreamStatistics](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/stats/StreamStatistics.java) object.
-Statistics update and query are performed respectively using a [StreamStatisticsUpdater](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/stats/StreamStatisticsUpdater.java) and a [StreamStatisticsQuery](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/stats/StreamStatisticsQuery.java) :
+Theses statistics are stored in a [StreamStatistics](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/com/github/pmerienne/trident/ml/stats/StreamStatistics.java) object.
+Statistics update and query are performed respectively using a [StreamStatisticsUpdater](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/com/github/pmerienne/trident/ml/stats/StreamStatisticsUpdater.java) and a [StreamStatisticsQuery](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/com/github/pmerienne/trident/ml/stats/StreamStatisticsQuery.java) :
 
 ```java
 TridentTopology toppology = new TridentTopology();
@@ -189,7 +189,7 @@ Use StreamStatistics#adaptive(maxSize) instead of StreamStatistics#fixed() to co
 Data preprocessing is an important step in the data mining process. 
 Trident-ML provides Trident functions to transform raw features into a representation that is more suitable for machine learning algorithms.
 
-* [Normalizer](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/preprocessing/Normalizer.java) scales individual instances to have unit norm. 
+* [Normalizer](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/com/github/pmerienne/trident/ml/preprocessing/Normalizer.java) scales individual instances to have unit norm. 
 
 ```java
 TridentTopology toppology = new TridentTopology();
@@ -205,7 +205,7 @@ toppology
   .each(new Fields("instance"), new Normalizer(), new Fields("scaledInstance"));
 ```
 
-* [StandardScaler](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/preprocessing/StandardScaler.java) transform raw features to standard normally distributed data (Gaussian with zero mean and unit variance). It uses [Stream Statistics](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/storm/trident/ml/stats/StreamStatistics.java) to remove mean and scale to variance.
+* [StandardScaler](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/com/github/pmerienne/trident/ml/preprocessing/StandardScaler.java) transform raw features to standard normally distributed data (Gaussian with zero mean and unit variance). It uses [Stream Statistics](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/com/github/pmerienne/trident/ml/stats/StreamStatistics.java) to remove mean and scale to variance.
 
 ```java
 TridentTopology toppology = new TridentTopology();
