@@ -224,6 +224,21 @@ toppology
   .each(new Fields("instance", "streamStats"), new StandardScaler(), new Fields("scaledInstance"));
 ```
 
+## Pre-trained classifier
+
+Trident-ML includes a pre-trained [twitter sentiment classifier](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/com/github/pmerienne/trident/ml/nlp/TwitterSentimentClassifier.java).
+It was built on a subset of the [Twitter Sentiment Corpus by Niek Sanders](http://www.sananalytics.com/lab/twitter-sentiment/) with a multi class PA classifier and classifies raw tweets as positive (true) or negative (false).
+This classifier is implemented as a trident function and can be easily used in a trident topology : 
+
+```java
+TridentTopology toppology = new TridentTopology();
+
+// Classification stream
+toppology.newDRPCStream("classify", localDRPC)
+  // Query classifier with text instance
+  .each(new Fields("args"), new TwitterSentimentClassifier(), new Fields("sentiment"));
+```
+
 # Maven integration : 
 
  ```xml
