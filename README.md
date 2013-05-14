@@ -9,6 +9,7 @@ Trident-ML currently supports :
 * Feature scaling (standardization, normalization)
 * Text feature extraction
 * Stream statistics (mean, variance)
+* Pre-Trained Twitter sentiment classifier
 
 # API Overview
 
