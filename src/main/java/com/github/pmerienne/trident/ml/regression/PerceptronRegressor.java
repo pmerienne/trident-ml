@@ -19,6 +19,8 @@ import com.github.pmerienne.trident.ml.util.MathUtil;
 
 public class PerceptronRegressor implements Regressor {
 
+	private static final long serialVersionUID = -6289701637173820235L;
+
 	private double[] weights;
 
 	public double learningRate = 0.1;
