@@ -241,17 +241,20 @@ toppology.newDRPCStream("classify", localDRPC)
 
 # Maven integration : 
 
+Trident-Ml is hosted on Clojars (a Maven repository). 
+To include Trident-ML in your project , add the following to your pom.xml: : 
  ```xml
-<repository>
-	<id>trident-ml</id>
-	<name>trident-ml repo</name>
-	<url>http://github.com/pmerienne/trident-ml/raw/master/releases</url>
-</repository>
+ <repositories>
+	<repository>
+		<id>clojars.org</id>
+		<url>http://clojars.org/repo</url>
+	</repository>
+</repositories>
 
 <dependency>
-	<groupId>storm</groupId>
+	<groupId>com.github.pmerienne</groupId>
 	<artifactId>trident-ml</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2</version>
 </dependency>
  ```
 
