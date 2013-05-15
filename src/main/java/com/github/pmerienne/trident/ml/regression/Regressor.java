@@ -15,8 +15,10 @@
  */
 package com.github.pmerienne.trident.ml.regression;
 
+import java.io.Serializable;
 
-public interface Regressor {
+
+public interface Regressor extends Serializable {
 
 	Double predict(double[] features);
 
