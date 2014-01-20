@@ -27,31 +27,29 @@ import storm.trident.state.map.MapState;
 import storm.trident.tuple.TridentTuple;
 import backtype.storm.tuple.Values;
 
-public class RegressionQuery extends
-		BaseQueryFunction<MapState<Regressor>, Double> {
+public class RegressionQuery extends BaseQueryFunction<MapState<Regressor>, Double> {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 582183815675337782L;
+
 	private String regressorName;
 
 	public RegressionQuery(String regressorName) {
 		this.regressorName = regressorName;
 	}
 
+	/**
+	 * What about cyclomatic complexity !! TODO : refactor this mess
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Double> batchRetrieve(MapState<Regressor> state,
-			List<TridentTuple> tuples) {
+	public List<Double> batchRetrieve(MapState<Regressor> state, List<TridentTuple> tuples) {
 		List<Double> labels = new ArrayList<Double>();
 
-		List<Regressor> regressors = state.multiGet(KeysUtil
-				.toKeys(this.regressorName));
+		List<Regressor> regressors = state.multiGet(KeysUtil.toKeys(this.regressorName));
 		if (regressors != null && !regressors.isEmpty()) {
 			Regressor regressor = regressors.get(0);
 			if (regressor == null) {
-				for (TridentTuple tuple : tuples) {
+				for (int i = 0; i < tuples.size(); i++) {
 					labels.add(null);
 				}
 			} else {
@@ -63,13 +61,16 @@ public class RegressionQuery extends
 					labels.add(label);
 				}
 			}
+		} else {
+			for (int i = 0; i < tuples.size(); i++) {
+				labels.add(null);
+			}
 		}
 
 		return labels;
 	}
 
-	public void execute(TridentTuple tuple, Double result,
-			TridentCollector collector) {
+	public void execute(TridentTuple tuple, Double result, TridentCollector collector) {
 		collector.emit(new Values(result));
 	}
 

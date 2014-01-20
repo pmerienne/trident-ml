@@ -18,14 +18,14 @@ package com.github.pmerienne.trident.ml.classification;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.pmerienne.trident.ml.core.Instance;
-import com.github.pmerienne.trident.ml.util.KeysUtil;
-
 import storm.trident.operation.TridentCollector;
 import storm.trident.state.BaseQueryFunction;
 import storm.trident.state.map.MapState;
 import storm.trident.tuple.TridentTuple;
 import backtype.storm.tuple.Values;
+
+import com.github.pmerienne.trident.ml.core.Instance;
+import com.github.pmerienne.trident.ml.util.KeysUtil;
 
 public class ClassifyQuery<L> extends BaseQueryFunction<MapState<Classifier<L>>, L> {
 
@@ -45,6 +45,11 @@ public class ClassifyQuery<L> extends BaseQueryFunction<MapState<Classifier<L>>,
 		List<Classifier<L>> classifiers = state.multiGet(KeysUtil.toKeys(this.classifierName));
 		if (classifiers != null && !classifiers.isEmpty()) {
 			Classifier<L> classifier = classifiers.get(0);
+			if(classifier == null) {
+				for (int i = 0; i < tuples.size(); i++) {
+					labels.add(null);
+				}
+			}
 
 			L label;
 			Instance<L> instance;
@@ -52,6 +57,10 @@ public class ClassifyQuery<L> extends BaseQueryFunction<MapState<Classifier<L>>,
 				instance = (Instance<L>) tuple.get(0);
 				label = classifier.classify(instance.features);
 				labels.add(label);
+			}
+		} else {
+			for (int i = 0; i < tuples.size(); i++) {
+				labels.add(null);
 			}
 		}
 
