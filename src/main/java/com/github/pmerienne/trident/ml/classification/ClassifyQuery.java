@@ -45,18 +45,19 @@ public class ClassifyQuery<L> extends BaseQueryFunction<MapState<Classifier<L>>,
 		List<Classifier<L>> classifiers = state.multiGet(KeysUtil.toKeys(this.classifierName));
 		if (classifiers != null && !classifiers.isEmpty()) {
 			Classifier<L> classifier = classifiers.get(0);
-			if(classifier == null) {
+			if (classifier == null) {
 				for (int i = 0; i < tuples.size(); i++) {
 					labels.add(null);
 				}
-			}
+			} else {
 
-			L label;
-			Instance<L> instance;
-			for (TridentTuple tuple : tuples) {
-				instance = (Instance<L>) tuple.get(0);
-				label = classifier.classify(instance.features);
-				labels.add(label);
+				L label;
+				Instance<L> instance;
+				for (TridentTuple tuple : tuples) {
+					instance = (Instance<L>) tuple.get(0);
+					label = classifier.classify(instance.features);
+					labels.add(label);
+				}
 			}
 		} else {
 			for (int i = 0; i < tuples.size(); i++) {
