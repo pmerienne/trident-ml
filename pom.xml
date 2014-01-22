@@ -127,6 +127,7 @@
 			<groupId>storm</groupId>
 			<artifactId>storm</artifactId>
 			<version>${storm.version}</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- Matrix manipulation -->
