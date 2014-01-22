@@ -24,15 +24,15 @@ import storm.trident.state.snapshot.ReadOnlySnapshottable;
 import storm.trident.tuple.TridentTuple;
 import backtype.storm.tuple.Values;
 
-public class EvaluationQuery<L> extends BaseQueryFunction<ReadOnlySnapshottable<Evaluator<L>>, Double> {
+public class EvaluationQuery<L> extends BaseQueryFunction<ReadOnlySnapshottable<Evaluation<L>>, Double> {
 
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public List<Double> batchRetrieve(ReadOnlySnapshottable<Evaluator<L>> state, List<TridentTuple> args) {
+	public List<Double> batchRetrieve(ReadOnlySnapshottable<Evaluation<L>> state, List<TridentTuple> args) {
 		List<Double> ret = new ArrayList<Double>(args.size());
 		
-		Evaluator<L> snapshot = state.get();
+		Evaluation<L> snapshot = state.get();
 		for (int i = 0; i < args.size(); i++) {
 			ret.add(snapshot.getEvaluation());
 		}

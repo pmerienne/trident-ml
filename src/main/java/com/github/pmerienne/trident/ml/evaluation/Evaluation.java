@@ -17,7 +17,7 @@ package com.github.pmerienne.trident.ml.evaluation;
 
 import java.io.Serializable;
 
-public interface Evaluator<L> extends Serializable {
+public interface Evaluation<L> extends Serializable {
 
 	double getEvaluation();
 

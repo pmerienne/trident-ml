@@ -50,7 +50,7 @@ public class AccuracyAggregator<L> implements CombinerAggregator<AccuracyState<L
 		return new AccuracyState<L>();
 	}
 
-	public static class AccuracyState<L> implements Evaluator<L> {
+	public static class AccuracyState<L> implements Evaluation<L> {
 
 		private static final long serialVersionUID = 938679193655075913L;
 
