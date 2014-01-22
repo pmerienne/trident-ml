@@ -255,15 +255,13 @@ To include Trident-ML in your project , add the following to your pom.xml: :
 <dependency>
 	<groupId>com.github.pmerienne</groupId>
 	<artifactId>trident-ml</artifactId>
-	<version>0.0.3</version>
+	<version>0.0.4</version>
 </dependency>
  ```
 
 # Upcoming features
 * Noise adaptive filter (LMS, Wiener, Kalman, ...)
-* Distributed algorithms
 * Change detection
-* 
 
 # Copyright and license
 
