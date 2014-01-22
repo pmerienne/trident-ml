@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.pmerienne</groupId>
 	<artifactId>trident-ml</artifactId>
@@ -31,12 +32,13 @@
 		<maven.compiler.target>1.6</maven.compiler.target>
 
 		<!-- Version dependencies -->
-		<storm.version>0.8.1</storm.version>
+		<storm.version>0.9.0.1</storm.version>
 		<jblas.version>1.2.3</jblas.version>
 		<lucene.version>3.6.2</lucene.version>
 
 		<junit.version>4.7</junit.version>
 		<mockito.version>1.9.0</mockito.version>
+		<assertj.version>1.5.0</assertj.version>
 	</properties>
 
 	<repositories>
@@ -127,6 +129,7 @@
 			<groupId>storm</groupId>
 			<artifactId>storm</artifactId>
 			<version>${storm.version}</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- Matrix manipulation -->
@@ -160,6 +163,12 @@
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
 			<version>${mockito.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<version>${assertj.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
