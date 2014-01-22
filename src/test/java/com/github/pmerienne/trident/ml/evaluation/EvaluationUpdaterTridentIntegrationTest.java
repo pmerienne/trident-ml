@@ -58,8 +58,9 @@ public class EvaluationUpdaterTridentIntegrationTest {
 			Stream predictionStream = toppology.newStream("nandsamples", new NANDSpout()) //
 					.stateQuery(perceptronModel, new Fields("instance"), new ClassifyQuery<Boolean>("perceptron"), new Fields("prediction"));
 
-			// Update evaluation, could do a partition aggregate !
-			predictionStream.partitionPersist(evaluationStateFactory, new Fields("instance", "prediction"), new EvaluationUpdater<Boolean>("perceptron", new ClassifierAccuracy<Boolean>()));
+			// Update evaluation
+			predictionStream //
+					.persistentAggregate(evaluationStateFactory, new Fields("instance", "prediction"), new AccuracyAggregator<Boolean>(), new Fields("accuracy"));
 
 			// Update model
 			predictionStream.partitionPersist(perceptronModelStateFactory, new Fields("instance"), new ClassifierUpdater<Boolean>("perceptron", new PerceptronClassifier()));
@@ -74,7 +75,7 @@ public class EvaluationUpdaterTridentIntegrationTest {
 
 			// Evaluation stream
 			toppology.newDRPCStream("evaluate", localDRPC) //
-					.stateQuery(perceptronEvaluation, new EvaluationQuery<Boolean>("perceptron"), new Fields("eval")) //
+					.stateQuery(perceptronEvaluation, new EvaluationQuery<Boolean>(), new Fields("eval")) //
 					.project(new Fields("eval"));
 
 			cluster.submitTopology(this.getClass().getSimpleName(), new Config(), toppology.build());
@@ -86,8 +87,8 @@ public class EvaluationUpdaterTridentIntegrationTest {
 			assertEquals(Boolean.FALSE, extractPrediction(localDRPC.execute("predict", "1.0 1.0 1.0")));
 
 			Double evaluation = extractEvaluation(localDRPC.execute("evaluate", ""));
-			assertTrue(evaluation > 0);
-			assertTrue(evaluation < 0.1);
+			assertTrue(evaluation > 0.9);
+			assertTrue(evaluation < 1);
 		} finally {
 			cluster.shutdown();
 			localDRPC.shutdown();

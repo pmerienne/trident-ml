@@ -20,45 +20,27 @@ import java.util.List;
 
 import storm.trident.operation.TridentCollector;
 import storm.trident.state.BaseQueryFunction;
-import storm.trident.state.map.MapState;
+import storm.trident.state.snapshot.ReadOnlySnapshottable;
 import storm.trident.tuple.TridentTuple;
 import backtype.storm.tuple.Values;
 
-import com.github.pmerienne.trident.ml.util.KeysUtil;
-
-public class EvaluationQuery<L> extends BaseQueryFunction<MapState<Evaluator<L>>, Double> {
+public class EvaluationQuery<L> extends BaseQueryFunction<ReadOnlySnapshottable<Evaluator<L>>, Double> {
 
 	private static final long serialVersionUID = 1L;
 
-	private final String evaluationName;
-
-	public EvaluationQuery(String classifierName) {
-		this.evaluationName = classifierName;
-	}
-
 	@Override
-	public List<Double> batchRetrieve(MapState<Evaluator<L>> state, List<TridentTuple> tuples) {
-		Double evaluation = null;
-
-		List<Evaluator<L>> evaluators = state.multiGet(KeysUtil.toKeys(this.evaluationName));
-		if (evaluators != null && !evaluators.isEmpty()) {
-			Evaluator<L> evaluator = evaluators.get(0);
-			if (evaluator != null) {
-				evaluation = evaluator.getEvaluation();
-			}
+	public List<Double> batchRetrieve(ReadOnlySnapshottable<Evaluator<L>> state, List<TridentTuple> args) {
+		List<Double> ret = new ArrayList<Double>(args.size());
+		
+		Evaluator<L> snapshot = state.get();
+		for (int i = 0; i < args.size(); i++) {
+			ret.add(snapshot.getEvaluation());
 		}
-
-		List<Double> evaluations = new ArrayList<Double>(tuples.size());
-		for (int i = 0; i < tuples.size(); i++) {
-			evaluations.add(evaluation);
-		}
-
-		return evaluations;
+		return ret;
 	}
 
 	@Override
 	public void execute(TridentTuple tuple, Double result, TridentCollector collector) {
 		collector.emit(new Values(result));
 	}
-
 }
