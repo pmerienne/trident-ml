@@ -266,6 +266,8 @@ However Storm prevents state updates to append simultaneously and the model lear
 
 Distributed algorithms will not be implemented in trident-ml, the whole design prevents this. 
 
+So you can't achieve distributed learning however but you can still partition the streams to pre-process/enrich your data in a distributed manner.
+
 # Copyright and license
 
 Copyright 2013-2015 Pierre Merienne
