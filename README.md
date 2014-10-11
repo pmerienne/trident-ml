@@ -259,9 +259,12 @@ To include Trident-ML in your project , add the following to your pom.xml: :
 </dependency>
  ```
 
-# Upcoming features
-* Noise adaptive filter (LMS, Wiener, Kalman, ...)
-* Change detection
+# Does trident-ml support distributed learning?
+Storm allows trident-ml to process batches of tuples in a distributed way (batches will be computed among several nodes). This means that trident-ml can scale horizontally with workload.
+
+However Storm prevents state updates to append simultaneously and the model learning is done in a state update. That's why, the learning step can't be distributed. Thankfully this lack of parallelization isn't a real bottle neck because the incremental algorithms are very fast (and simple!).
+
+Distributed algorithms will not be implemented in trident-ml, the whole design prevents this. 
 
 # Copyright and license
 
