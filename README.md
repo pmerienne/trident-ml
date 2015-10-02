@@ -3,8 +3,8 @@ This library is built on top of [Storm](https://github.com/nathanmarz/storm), a 
 The packaged algorithms are designed to fit into limited memory and processing time but they don't work in a distributed way.
 
 Trident-ML currently supports : 
-* Linear classification (Perceptron, Passive-Aggresive, Winnow, AROW)
-* Linear regression (Perceptron, Passive-Aggresive)
+* Linear classification (Perceptron, Passive-Aggressive, Winnow, AROW)
+* Linear regression (Perceptron, Passive-Aggressive)
 * Clustering (KMeans)
 * Feature scaling (standardization, normalization)
 * Text feature extraction
@@ -64,10 +64,10 @@ an extension of the original Winnow algorithm.
 is an simple and efficient implementation of [Adaptive Regularization of Weights](http://books.nips.cc/papers/files/nips22/NIPS2009_0611.pdf).
 It combines several useful properties : large margin training, confidence weighting, and the capacity to handle non-separable data.
 * [PAClassifier](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/com/github/pmerienne/trident/ml/classification/PAClassifier.java)
-implements the [Passive-Aggresive binary classifier](http://eprints.pascal-network.org/archive/00002147/01/CrammerDeKeShSi06.pdf)
+implements the [Passive-Aggressive binary classifier](http://eprints.pascal-network.org/archive/00002147/01/CrammerDeKeShSi06.pdf)
 a margin based learning algorithm.
 * [MultiClassPAClassifier](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/com/github/pmerienne/trident/ml/classification/MultiClassPAClassifier.java)
-a variant of the Passive-Aggresive performing one-vs-all multiclass classification.
+a variant of the Passive-Aggressive performing one-vs-all multiclass classification.
 
 Theses classifiers learn from a datastream of labeled [Instance](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/com/github/pmerienne/trident/ml/core/Instance.java)
 using a [ClassifierUpdater](https://github.com/pmerienne/trident-ml/blob/master/src/main/java/com/github/pmerienne/trident/ml/classification/ClassifierUpdater.java).
